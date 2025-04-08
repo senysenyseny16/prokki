@@ -23,4 +23,4 @@ indexHandler manager req = do
       bodyLength = LBS.length cbody
       newHeaders = (hContentLength, BS.pack $ show bodyLength) : filter (\(h, _) -> h /= hContentLength) headers
 
-  return $ responseLBS (HC.responseStatus response) newHeaders cbody
+  pure $ responseLBS (HC.responseStatus response) newHeaders cbody

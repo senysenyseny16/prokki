@@ -7,10 +7,12 @@ import Network.Wai (Request, Response, pathInfo)
 import Prokki.Handlers.ErrorHandler (errorHandler)
 import Prokki.Handlers.IndexHandler (indexHandler)
 import Prokki.Handlers.PackagesHandler (packagesHandler)
+import Control.Monad.Trans.Resource (ResIO)
+import Control.Monad.IO.Class (MonadIO(liftIO))
 
-requestDispatcher :: C.Manager -> Request -> IO Response
+requestDispatcher :: C.Manager -> Request -> ResIO Response
 requestDispatcher manager req =
   case pathInfo req of
-    ("simple" : _) -> indexHandler manager req
+    ("simple" : _) -> liftIO $ indexHandler manager req
     ("packages" : _) -> packagesHandler manager req
-    _ -> errorHandler manager req
+    _ -> liftIO $ errorHandler manager req

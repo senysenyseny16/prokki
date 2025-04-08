@@ -33,28 +33,28 @@ fetchAndCache url = do
   if cached
     then do
       body <- BL.readFile cachePath
-      return (body, Nothing) -- No need to modify cached binary files
+      pure (body, Nothing) -- No need to modify cached binary files
     else do
       response <- httpLBS (parseRequest_ url)
       let body = getResponseBody response
           contentType = getResponseHeader "Content-Type" response
       createDirectoryIfMissing True cacheDir
       BL.writeFile cachePath body
-      return (body, fmap (BLC.unpack . BLC.fromStrict) (listToMaybe contentType)) -- Convert strict to lazy ByteString
+      pure (body, fmap (BLC.unpack . BLC.fromStrict) (listToMaybe contentType)) -- Convert strict to lazy ByteString
 
 -- Replace PyPI URLs with localhost in HTML responses
 rewriteUrls :: BL.ByteString -> BL.ByteString
 rewriteUrls content =
   case TLE.decodeUtf8' content of
     Right text -> TLE.encodeUtf8 (TL.replace "https://files.pythonhosted.org" "http://localhost:8080" text)
-    Left _ -> content -- If it's binary data, return as is
+    Left _ -> content -- If it's binary data, pure as is
 
 parseHostWithPort :: Parser (String, Int)
 parseHostWithPort = do
     host <- many1 (noneOf ":")
     _ <- char ':'
     port <- many1 digit
-    return (host, read port)
+    pure (host, read port)
 
 -- Sanitize rawPath to handle hostname:port or path
 sanitizeURL :: String -> String

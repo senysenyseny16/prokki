@@ -49,6 +49,7 @@ library
     , http-conduit
     , http-types
     , resourcet
+    , unliftio-core
     , text
     , time
     , wai

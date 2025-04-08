@@ -7,4 +7,4 @@ import Network.HTTP.Types (status404)
 import Network.Wai (Request, Response, responseLBS)
 
 errorHandler :: C.Manager -> Request -> IO Response
-errorHandler _ _ = return $ responseLBS status404 [("Content-Type", "text/plain")] "404 Not Found"
+errorHandler _ _ = pure $ responseLBS status404 [("Content-Type", "text/plain")] "404 Not Found"
