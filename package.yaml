@@ -19,6 +19,9 @@ dependencies:
 - http-client
 - http-conduit
 - http-types
+- conduit
+- conduit-extra
+- resourcet
 - bytestring
 - text
 - zlib

@@ -42,10 +42,13 @@ library
   build-depends:
       base >=4.7 && <5
     , bytestring
+    , conduit
+    , conduit-extra
     , fast-logger
     , http-client
     , http-conduit
     , http-types
+    , resourcet
     , text
     , time
     , wai
@@ -65,11 +68,14 @@ executable prokki-exe
   build-depends:
       base >=4.7 && <5
     , bytestring
+    , conduit
+    , conduit-extra
     , fast-logger
     , http-client
     , http-conduit
     , http-types
     , prokki
+    , resourcet
     , text
     , time
     , wai
@@ -90,11 +96,14 @@ test-suite prokki-test
   build-depends:
       base >=4.7 && <5
     , bytestring
+    , conduit
+    , conduit-extra
     , fast-logger
     , http-client
     , http-conduit
     , http-types
     , prokki
+    , resourcet
     , text
     , time
     , wai
