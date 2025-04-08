@@ -1,9 +1,8 @@
-import Network.Wai (Application)
+import qualified Network.HTTP.Conduit as C
 import Network.Wai.Handler.Warp (run)
-import Prokki.RequestDispatcher (requestDispatcher)
-
-prokki :: Application
-prokki req respond = requestDispatcher req >>= respond
+import Prokki.Prokki (prokki)
 
 main :: IO ()
-main = run 8080 prokki
+main = do
+  manager <- C.newManager C.tlsManagerSettings
+  run 8080 (prokki manager)

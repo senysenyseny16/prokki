@@ -28,6 +28,7 @@ library
       Prokki.Handlers.ErrorHandler
       Prokki.Handlers.IndexHandler
       Prokki.Handlers.PackagesHandler
+      Prokki.Prokki
       Prokki.RequestDispatcher
       Prokki.Utils
   other-modules:

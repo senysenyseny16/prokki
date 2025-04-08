@@ -11,12 +11,11 @@ import Network.HTTP.Types (hContentLength)
 import Network.Wai (Request, Response, pathInfo, responseLBS)
 import Prokki.Utils (compress, replaceSubstring)
 
-indexHandler :: Request -> IO Response
-indexHandler req = do
+indexHandler :: C.Manager -> Request -> IO Response
+indexHandler manager req = do
   let path = T.intercalate "/" $ pathInfo req
       url = "https://pypi.org/" ++ T.unpack path
 
-  manager <- C.newManager C.tlsManagerSettings
   request <- C.parseRequest url
   response <- C.httpLbs request manager
   let headers = HC.responseHeaders response
