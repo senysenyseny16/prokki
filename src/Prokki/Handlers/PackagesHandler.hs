@@ -19,7 +19,7 @@ packagesHandler manager req = do
       url = "https://pypi.org/" ++ path
 
   request <- liftIO $ C.parseRequest url
-  response <- C.http request manager
+  response <- C.http request { C.decompress = const False } manager
   let status = C.responseStatus response
       headers = C.responseHeaders response
   withRunInIO \unlift -> 
