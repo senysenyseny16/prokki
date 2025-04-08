@@ -22,6 +22,8 @@ dependencies:
 - bytestring
 - text
 - zlib
+- time
+- fast-logger
 
 ghc-options:
 - -Wall

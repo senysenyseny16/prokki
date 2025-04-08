@@ -28,6 +28,7 @@ library
       Prokki.Handlers.ErrorHandler
       Prokki.Handlers.IndexHandler
       Prokki.Handlers.PackagesHandler
+      Prokki.Middleware.LogMiddleware
       Prokki.Prokki
       Prokki.RequestDispatcher
       Prokki.Utils
@@ -41,10 +42,12 @@ library
   build-depends:
       base >=4.7 && <5
     , bytestring
+    , fast-logger
     , http-client
     , http-conduit
     , http-types
     , text
+    , time
     , wai
     , warp
     , zlib
@@ -62,11 +65,13 @@ executable prokki-exe
   build-depends:
       base >=4.7 && <5
     , bytestring
+    , fast-logger
     , http-client
     , http-conduit
     , http-types
     , prokki
     , text
+    , time
     , wai
     , warp
     , zlib
@@ -85,11 +90,13 @@ test-suite prokki-test
   build-depends:
       base >=4.7 && <5
     , bytestring
+    , fast-logger
     , http-client
     , http-conduit
     , http-types
     , prokki
     , text
+    , time
     , wai
     , warp
     , zlib
