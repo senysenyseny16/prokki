@@ -1,12 +1,13 @@
 {-# LANGUAGE OverloadedStrings #-}
 
-module Prokki.Utils (replaceSubstring, compress) where
+module Prokki.Utils (replaceSubstring, compress, getPath) where
 
 import qualified Codec.Compression.GZip as GZip
 import qualified Data.ByteString.Lazy as LBS
 import qualified Data.ByteString.Lazy.Char8 as LBS8
 import qualified Data.Text as T
 import Data.Text.Encoding (decodeUtf8, encodeUtf8)
+import Network.Wai (Request, pathInfo)
 
 replaceSubstring :: LBS.ByteString -> LBS.ByteString
 replaceSubstring body =
@@ -16,3 +17,6 @@ replaceSubstring body =
 
 compress :: LBS8.ByteString -> LBS8.ByteString
 compress = GZip.compressWith GZip.defaultCompressParams {GZip.compressLevel = GZip.bestCompression}
+
+getPath :: Request -> String
+getPath = T.unpack . T.intercalate "/" . pathInfo

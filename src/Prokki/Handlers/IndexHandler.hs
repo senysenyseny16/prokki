@@ -4,17 +4,16 @@ module Prokki.Handlers.IndexHandler (indexHandler) where
 
 import qualified Data.ByteString.Char8 as BS
 import qualified Data.ByteString.Lazy as LBS
-import qualified Data.Text as T
 import qualified Network.HTTP.Client as HC
 import qualified Network.HTTP.Conduit as C
 import Network.HTTP.Types (hContentLength)
-import Network.Wai (Request, Response, pathInfo, responseLBS)
-import Prokki.Utils (compress, replaceSubstring)
+import Network.Wai (Request, Response, responseLBS)
+import Prokki.Utils (compress, getPath, replaceSubstring)
 
 indexHandler :: C.Manager -> Request -> IO Response
 indexHandler manager req = do
-  let path = T.intercalate "/" $ pathInfo req
-      url = "https://pypi.org/" ++ T.unpack path
+  let path = getPath req
+      url = "https://pypi.org/" ++ path
 
   request <- C.parseRequest url
   response <- C.httpLbs request manager
