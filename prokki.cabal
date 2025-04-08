@@ -1,0 +1,95 @@
+cabal-version: 2.2
+
+-- This file has been generated from package.yaml by hpack version 0.37.0.
+--
+-- see: https://github.com/sol/hpack
+
+name:           prokki
+version:        0.1.0.0
+description:    Please see the README on GitHub at <https://github.com/githubuser/py-index-cache#readme>
+homepage:       https://github.com/senysenyseny16/prokki#readme
+bug-reports:    https://github.com/senysenyseny16/prokki/issues
+author:         Arseny Yanchenko
+maintainer:     arseny@protonmail.com
+copyright:      2025 Arseny Yanchenko
+license:        BSD-3-Clause
+license-file:   LICENSE
+build-type:     Simple
+extra-source-files:
+    README.md
+    CHANGELOG.md
+
+source-repository head
+  type: git
+  location: https://github.com/senysenyseny16/prokki
+
+library
+  exposed-modules:
+      Prokki.Handlers.ErrorHandler
+      Prokki.Handlers.IndexHandler
+      Prokki.Handlers.PackagesHandler
+      Prokki.RequestDispatcher
+      Prokki.Utils
+  other-modules:
+      Paths_prokki
+  autogen-modules:
+      Paths_prokki
+  hs-source-dirs:
+      src
+  ghc-options: -Wall -Wcompat -Widentities -Wincomplete-record-updates -Wincomplete-uni-patterns -Wmissing-export-lists -Wmissing-home-modules -Wpartial-fields -Wredundant-constraints
+  build-depends:
+      base >=4.7 && <5
+    , bytestring
+    , http-client
+    , http-conduit
+    , http-types
+    , text
+    , wai
+    , warp
+    , zlib
+  default-language: Haskell2010
+
+executable prokki-exe
+  main-is: Main.hs
+  other-modules:
+      Paths_prokki
+  autogen-modules:
+      Paths_prokki
+  hs-source-dirs:
+      app
+  ghc-options: -Wall -Wcompat -Widentities -Wincomplete-record-updates -Wincomplete-uni-patterns -Wmissing-export-lists -Wmissing-home-modules -Wpartial-fields -Wredundant-constraints -threaded -rtsopts -with-rtsopts=-N
+  build-depends:
+      base >=4.7 && <5
+    , bytestring
+    , http-client
+    , http-conduit
+    , http-types
+    , prokki
+    , text
+    , wai
+    , warp
+    , zlib
+  default-language: Haskell2010
+
+test-suite prokki-test
+  type: exitcode-stdio-1.0
+  main-is: Spec.hs
+  other-modules:
+      Paths_prokki
+  autogen-modules:
+      Paths_prokki
+  hs-source-dirs:
+      test
+  ghc-options: -Wall -Wcompat -Widentities -Wincomplete-record-updates -Wincomplete-uni-patterns -Wmissing-export-lists -Wmissing-home-modules -Wpartial-fields -Wredundant-constraints -threaded -rtsopts -with-rtsopts=-N
+  build-depends:
+      base >=4.7 && <5
+    , bytestring
+    , http-client
+    , http-conduit
+    , http-types
+    , prokki
+    , text
+    , wai
+    , warp
+    , zlib
+  default-language: Haskell2010

@@ -1,0 +1,60 @@
+name:                prokki
+version:             0.1.0.0
+github:              "senysenyseny16/prokki"
+license:             BSD-3-Clause
+author:              "Arseny Yanchenko"
+maintainer:          "arseny@protonmail.com"
+copyright:           "2025 Arseny Yanchenko"
+
+extra-source-files:
+- README.md
+- CHANGELOG.md
+
+description: Please see the README on GitHub at <https://github.com/githubuser/py-index-cache#readme>
+
+dependencies:
+- base >= 4.7 && < 5
+- wai
+- warp
+- http-client
+- http-conduit
+- http-types
+- bytestring
+- text
+- zlib
+
+ghc-options:
+- -Wall
+- -Wcompat
+- -Widentities
+- -Wincomplete-record-updates
+- -Wincomplete-uni-patterns
+- -Wmissing-export-lists
+- -Wmissing-home-modules
+- -Wpartial-fields
+- -Wredundant-constraints
+
+library:
+  source-dirs: src
+
+executables:
+  prokki-exe:
+    main: Main.hs
+    source-dirs: app
+    ghc-options:
+    - -threaded
+    - -rtsopts
+    - -with-rtsopts=-N
+    dependencies:
+    - prokki
+
+tests:
+  prokki-test:
+    main: Spec.hs
+    source-dirs: test
+    ghc-options:
+    - -threaded
+    - -rtsopts
+    - -with-rtsopts=-N
+    dependencies:
+    - prokki
