@@ -1,0 +1,13 @@
+**
+
+!app
+!src
+!test
+!package.yaml
+!prokki.cabal
+!Setup.hs
+!stack.yaml
+!stack.yaml.lock
+!README.md
+!CHANGELOG.md
+!LICENSE

@@ -1,0 +1,4 @@
+snapshot: lts-22.36
+packages:
+- .
+notify-if-nix-on-path: false
