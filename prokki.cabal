@@ -45,13 +45,12 @@ library
     , conduit
     , conduit-extra
     , fast-logger
-    , http-client
     , http-conduit
     , http-types
     , resourcet
-    , unliftio-core
     , text
     , time
+    , unliftio-core
     , wai
     , warp
     , zlib
@@ -72,13 +71,13 @@ executable prokki-exe
     , conduit
     , conduit-extra
     , fast-logger
-    , http-client
     , http-conduit
     , http-types
     , prokki
     , resourcet
     , text
     , time
+    , unliftio-core
     , wai
     , warp
     , zlib
@@ -100,13 +99,13 @@ test-suite prokki-test
     , conduit
     , conduit-extra
     , fast-logger
-    , http-client
     , http-conduit
     , http-types
     , prokki
     , resourcet
     , text
     , time
+    , unliftio-core
     , wai
     , warp
     , zlib

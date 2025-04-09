@@ -1,17 +1,17 @@
-{-# LANGUAGE OverloadedStrings #-}
 {-# LANGUAGE BlockArguments #-}
+{-# LANGUAGE OverloadedStrings #-}
 
 module Prokki.Handlers.PackagesHandler (packagesHandler) where
 
+import Control.Monad.IO.Class (liftIO)
+import Control.Monad.IO.Unlift (withRunInIO)
 import Control.Monad.Trans.Resource (ResIO)
 import Data.ByteString.Builder (byteString)
 import Data.Conduit (runConduit, (.|))
-import qualified Data.Conduit.Combinators as DCC
+import qualified Data.Conduit.Combinators as CC
 import qualified Network.HTTP.Conduit as C
 import Network.Wai (Request, Response, responseStream)
 import Prokki.Utils (getPath)
-import Control.Monad.IO.Class (liftIO)
-import Control.Monad.IO.Unlift (withRunInIO)
 
 packagesHandler :: C.Manager -> Request -> ResIO Response
 packagesHandler manager req = do
@@ -19,10 +19,11 @@ packagesHandler manager req = do
       url = "https://pypi.org/" ++ path
 
   request <- liftIO $ C.parseRequest url
-  response <- C.http request { C.decompress = const False } manager
+  response <- C.http request {C.decompress = const False} manager
   let status = C.responseStatus response
       headers = C.responseHeaders response
-  withRunInIO \unlift -> 
+  withRunInIO \unlift ->
     pure $ responseStream status headers $ \write flush -> do
       let bodySource = C.responseBody response
-      unlift $ runConduit $ bodySource .| DCC.mapM_ (\chunk -> liftIO $ write (byteString chunk) >> flush)
+      unlift $ runConduit $ bodySource .| CC.mapM_ (liftIO . write . byteString)
+      flush

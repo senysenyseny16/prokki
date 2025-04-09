@@ -4,7 +4,6 @@ module Prokki.Handlers.IndexHandler (indexHandler) where
 
 import qualified Data.ByteString.Char8 as BS
 import qualified Data.ByteString.Lazy as LBS
-import qualified Network.HTTP.Client as HC
 import qualified Network.HTTP.Conduit as C
 import Network.HTTP.Types (hContentLength)
 import Network.Wai (Request, Response, responseLBS)
@@ -17,10 +16,10 @@ indexHandler manager req = do
 
   request <- C.parseRequest url
   response <- C.httpLbs request manager
-  let headers = HC.responseHeaders response
-      body = replaceSubstring $ HC.responseBody response
+  let headers = C.responseHeaders response
+      body = replaceSubstring $ C.responseBody response
       cbody = compress body
       bodyLength = LBS.length cbody
       newHeaders = (hContentLength, BS.pack $ show bodyLength) : filter (\(h, _) -> h /= hContentLength) headers
 
-  pure $ responseLBS (HC.responseStatus response) newHeaders cbody
+  pure $ responseLBS (C.responseStatus response) newHeaders cbody
