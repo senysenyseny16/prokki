@@ -28,8 +28,7 @@ indexHandler req manager Index {..} = do
   request <- C.parseRequest (T.unpack url)
   response <- C.httpLbs request manager
   let headers = C.responseHeaders response
-      body = replacePackageLink (C.responseBody response) address
-      newBody = compress body
+      newBody = compress (replacePackageLink (C.responseBody response) address)
       bodyLength = LBS.length newBody
       newHeaders = (hContentLength, BS.pack $ show bodyLength) : filter (\(h, _) -> h /= hContentLength) headers
 

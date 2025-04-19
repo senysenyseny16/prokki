@@ -6,7 +6,7 @@ cabal-version: 2.2
 
 name:           prokki
 version:        0.1.0.0
-description:    Please see the README on GitHub at <https://github.com/githubuser/py-index-cache#readme>
+description:    Please see the README on GitHub at <https://github.com/senysenyseny16/prokki#readme>
 homepage:       https://github.com/senysenyseny16/prokki#readme
 bug-reports:    https://github.com/senysenyseny16/prokki/issues
 author:         Arseny Yanchenko
