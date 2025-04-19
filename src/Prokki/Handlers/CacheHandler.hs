@@ -102,8 +102,6 @@ removeCacheDirectory :: FilePath -> IO ()
 removeCacheDirectory cacheDir = do
   removeDirectoryRecursive cacheDir
     `catch` handleIOException "Failed to delete cache directory"
-  createDirectory cacheDir
-    `catch` handleIOException "Failed to recreate cache directory"
 
 getCacheSize :: FilePath -> IO Int
 getCacheSize dir = do
