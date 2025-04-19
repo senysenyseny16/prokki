@@ -18,5 +18,5 @@ requestDispatcher req manager settings@Settings {..} =
   case pathInfo req of
     ("simple" : _) -> liftIO $ indexHandler req manager index
     ("packages" : _) -> packagesHandler req manager index cache
-    ("cache" : subPath) -> liftIO $ cacheHandler subPath req manager cache -- Delegate to cacheHandler
+    ("cache" : subPath) -> liftIO $ cacheHandler subPath req manager cache
     _ -> liftIO $ errorHandler req manager

@@ -2,10 +2,7 @@
 {-# LANGUAGE RecordWildCards #-}
 {-# LANGUAGE ScopedTypeVariables #-}
 
-module Prokki.Handlers.CacheHandler 
-  ( cacheHandler
-  ) 
-where
+module Prokki.Handlers.CacheHandler (cacheHandler) where
 
 import Control.Exception (IOException, catch)
 import Control.Monad (when)
@@ -14,29 +11,29 @@ import Data.List (isSuffixOf)
 import Data.Text (Text)
 import qualified Data.Text as T
 import qualified Network.HTTP.Conduit as C
-import Network.HTTP.Types 
-( status200,
-  status204,
-  status400,
-  status404,
-  status405,
-)
+import Network.HTTP.Types
+  ( status200,
+    status204,
+    status400,
+    status404,
+    status405,
+  )
 import Network.HTTP.Types.Method (methodDelete, methodGet)
 import Network.Wai (Request, Response, requestMethod, responseLBS)
 import Prokki.Handlers.ErrorHandler (errorHandler)
-import Prokki.Settings (Cache(..))
-import System.Directory 
-( removeFile,
-  removeDirectoryRecursive,
-  createDirectory,
-  listDirectory,
-  doesDirectoryExist,
-  doesFileExist
-)
-import System.FilePath ((</>), makeRelative)
+import Prokki.Settings (Cache (..))
+import System.Directory
+  ( createDirectory,
+    doesDirectoryExist,
+    doesFileExist,
+    listDirectory,
+    removeDirectoryRecursive,
+    removeFile,
+  )
+import System.FilePath (makeRelative, (</>))
 
 cacheHandler :: [Text] -> Request -> C.Manager -> Cache -> IO Response
-cacheHandler subPath req manager cache@Cache{..} =
+cacheHandler subPath req manager cache@Cache {..} =
   case subPath of
     ("package" : packageParts) -> handleDeletePackage packageParts req cacheDir
     ["all"] -> handleDeleteAll req cacheDir
@@ -77,6 +74,7 @@ handleGetSize req cacheDir = do
     then methodNotAllowed
     else do
       size <- getCacheSize cacheDir
+      putStrLn $ "Count of files in cache directory: " ++ show size -- Logging
       return $ responseLBS status200 [] (BSC8.pack $ show size)
 
 methodNotAllowed :: IO Response
@@ -128,7 +126,6 @@ getCacheSize dir = do
           )
           contents
       return (sum counts)
-
 
 hasMetadataExtension :: FilePath -> Bool
 hasMetadataExtension filename = ".metadata" `isSuffixOf` filename
