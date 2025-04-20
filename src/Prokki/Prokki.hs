@@ -1,12 +1,20 @@
-module Prokki.Prokki (prokki) where
+module Prokki.Prokki (prokkiApp) where
 
-import Control.Monad.IO.Class (MonadIO (liftIO))
+import Control.Monad.IO.Class (liftIO)
+import Control.Monad.Logger (runStdoutLoggingT)
+import Control.Monad.Reader (runReaderT)
 import Control.Monad.Trans.Resource (runResourceT)
-import qualified Network.HTTP.Conduit as C
-import Network.Wai (Application)
+import Network.Wai (Application, Request, Response)
+import Prokki.Env (Env)
+import Prokki.Monad (ProkkiM (..))
 import Prokki.RequestDispatcher (requestDispatcher)
-import Prokki.Settings (Settings (..))
 
-prokki :: Settings -> C.Manager -> Application
-prokki settings manager req respond = do
-  runResourceT $ requestDispatcher req manager settings >>= liftIO . respond
+mkProkkiApp :: Env -> (Request -> ProkkiM Response) -> Application
+mkProkkiApp env handler req respond = do
+  let action = runProkkiM $ handler req
+  runResourceT $
+    runStdoutLoggingT $
+      runReaderT action env >>= liftIO . respond
+
+prokkiApp :: Env -> Application
+prokkiApp env = mkProkkiApp env requestDispatcher

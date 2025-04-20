@@ -34,5 +34,5 @@ packageLinkParser = string "href=\"" *> hostParser *> string "packages" $> ()
 getPath :: Request -> T.Text
 getPath = T.intercalate "/" . pathInfo
 
-prokkiVersion :: String
-prokkiVersion = showVersion version
+prokkiVersion :: T.Text
+prokkiVersion = T.pack $ showVersion version

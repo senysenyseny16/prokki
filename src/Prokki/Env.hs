@@ -1,5 +1,5 @@
-module Prokki.Settings
-  ( Settings (..),
+module Prokki.Env
+  ( Env (..),
     Address (..),
     Index (..),
     Cache (..),
@@ -7,8 +7,14 @@ module Prokki.Settings
 where
 
 import qualified Data.Text as T
+import qualified Network.HTTP.Conduit as C
 
-data Settings = Settings {address :: Address, index :: Index, cache :: Cache} deriving (Show)
+data Env = Env
+  { address :: Address,
+    index :: Index,
+    cache :: Cache,
+    manager :: C.Manager
+  }
 
 data Address = Address {host :: T.Text, port :: Int}
 

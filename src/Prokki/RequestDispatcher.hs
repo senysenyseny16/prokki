@@ -1,20 +1,16 @@
 {-# LANGUAGE OverloadedStrings #-}
-{-# LANGUAGE RecordWildCards #-}
 
 module Prokki.RequestDispatcher (requestDispatcher) where
 
-import Control.Monad.IO.Class (MonadIO (liftIO))
-import Control.Monad.Trans.Resource (ResIO)
-import qualified Network.HTTP.Conduit as C
 import Network.Wai (Request, Response, pathInfo)
 import Prokki.Handlers.ErrorHandler (errorHandler)
-import Prokki.Handlers.IndexHandler (indexHandler)
 import Prokki.Handlers.PackagesHandler (packagesHandler)
-import Prokki.Settings (Settings (..))
+import Prokki.Handlers.SimpleHandler (simpleHandler)
+import Prokki.Monad (ProkkiM)
 
-requestDispatcher :: Request -> C.Manager -> Settings -> ResIO Response
-requestDispatcher req manager Settings {..} =
+requestDispatcher :: Request -> ProkkiM Response
+requestDispatcher req = do
   case pathInfo req of
-    ("simple" : _) -> liftIO $ indexHandler req manager index
-    ("packages" : _) -> packagesHandler req manager index cache
-    _ -> liftIO $ errorHandler req manager
+    ("simple" : _) -> simpleHandler req
+    ("packages" : _) -> packagesHandler req
+    _ -> errorHandler req

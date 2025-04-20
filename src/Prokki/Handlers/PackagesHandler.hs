@@ -7,7 +7,7 @@ module Prokki.Handlers.PackagesHandler (packagesHandler) where
 import qualified Control.Exception as E
 import Control.Monad.IO.Class (MonadIO, liftIO)
 import Control.Monad.IO.Unlift (withRunInIO)
-import Control.Monad.Trans.Resource (ResIO)
+import Control.Monad.Reader (ask)
 import Data.ByteString (ByteString)
 import Data.ByteString.Builder (Builder, byteString)
 import Data.Conduit (ConduitT, ZipConduit (..), getZipConduit, runConduit, (.|))
@@ -15,15 +15,19 @@ import qualified Data.Conduit.Combinators as CC
 import qualified Data.Text as T
 import qualified Network.HTTP.Conduit as C
 import Network.Wai (Request, Response, responseFile, responseStream)
-import Prokki.Settings (Cache (..), Index (..))
+import Prokki.Env (Cache (..), Env (..), Index (..))
+import Prokki.Monad (ProkkiM)
 import Prokki.Utils (getPath)
 import System.Directory (createDirectoryIfMissing, doesFileExist, removeFile)
 import System.FilePath (takeDirectory, (</>))
 import System.IO (Handle, IOMode (WriteMode), hClose, openFile)
 
-packagesHandler :: Request -> C.Manager -> Index -> Cache -> ResIO Response
-packagesHandler req manager Index {..} Cache {..} = do
-  let path = getPath req
+packagesHandler :: Request -> ProkkiM Response
+packagesHandler req = do
+  Env {..} <- ask
+  let Index {..} = index
+      Cache {..} = cache
+      path = getPath req
       url = indexUrl <> path
       packagePath = cacheDir </> T.unpack path
 
