@@ -1,13 +1,19 @@
 {-# LANGUAGE OverloadedStrings #-}
 
-module Parser (settingsParser) where
+module Parser (argsParser, Args (..)) where
 
 import qualified Data.Text as T
 import Options.Applicative
-import Prokki.Settings (Address (..), Cache (..), Index (..), Settings (..))
+import Prokki.Env
 
-settingsParser :: Parser Settings
-settingsParser = Settings <$> addressParser <*> indexParser <*> cacheParser
+data Args = Args
+  { address :: Address,
+    index :: Index,
+    cache :: Cache
+  }
+
+argsParser :: Parser Args
+argsParser = Args <$> addressParser <*> indexParser <*> cacheParser
 
 addressParser :: Parser Address
 addressParser =

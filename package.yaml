@@ -26,11 +26,14 @@ dependencies:
 - unliftio-core
 - megaparsec
 - replace-megaparsec
+- mtl
+- exceptions
 - filepath
 - directory
 - bytestring
 - text
 - zlib
+- monad-logger
 - optparse-applicative
 
 ghc-options:

@@ -26,12 +26,13 @@ source-repository head
 
 library
   exposed-modules:
+      Prokki.Env
       Prokki.Handlers.ErrorHandler
-      Prokki.Handlers.IndexHandler
       Prokki.Handlers.PackagesHandler
+      Prokki.Handlers.SimpleHandler
+      Prokki.Monad
       Prokki.Prokki
       Prokki.RequestDispatcher
-      Prokki.Settings
       Prokki.Utils
   other-modules:
       Paths_prokki
@@ -46,10 +47,13 @@ library
     , conduit
     , conduit-extra
     , directory
+    , exceptions
     , filepath
     , http-conduit
     , http-types
     , megaparsec
+    , monad-logger
+    , mtl
     , optparse-applicative
     , replace-megaparsec
     , resourcet
@@ -77,10 +81,13 @@ executable prokki
     , conduit
     , conduit-extra
     , directory
+    , exceptions
     , filepath
     , http-conduit
     , http-types
     , megaparsec
+    , monad-logger
+    , mtl
     , optparse-applicative
     , prokki
     , replace-megaparsec
@@ -109,10 +116,13 @@ test-suite prokki-test
     , conduit
     , conduit-extra
     , directory
+    , exceptions
     , filepath
     , http-conduit
     , http-types
     , megaparsec
+    , monad-logger
+    , mtl
     , optparse-applicative
     , prokki
     , replace-megaparsec
