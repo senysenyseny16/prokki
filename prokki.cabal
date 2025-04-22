@@ -26,6 +26,7 @@ source-repository head
 
 library
   exposed-modules:
+      Prokki.Cache
       Prokki.Env
       Prokki.Handlers.ErrorHandler
       Prokki.Handlers.PackagesHandler
