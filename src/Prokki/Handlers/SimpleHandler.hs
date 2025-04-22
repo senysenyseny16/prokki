@@ -14,7 +14,7 @@ import Network.HTTP.Types (hContentLength)
 import Network.Wai (Request, Response, isSecure, requestHeaderHost, requestHeaders, responseLBS)
 import Prokki.Env (Env (..), Index (..))
 import Prokki.Monad (ProkkiM)
-import Prokki.Utils (compress, getPath, replacePackageLink)
+import Prokki.Utils (getPath, replacePackageLink)
 
 simpleHandler :: Request -> ProkkiM Response
 simpleHandler req = do
@@ -32,7 +32,7 @@ simpleHandler req = do
   request <- C.parseRequest (T.unpack url)
   response <- C.httpLbs request manager
   let headers = C.responseHeaders response
-      newBody = compress (replacePackageLink (C.responseBody response) addr)
+      newBody = replacePackageLink (C.responseBody response) addr
       bodyLength = LBS.length newBody
       newHeaders = (hContentLength, BS.pack $ show bodyLength) : filter (\(h, _) -> h /= hContentLength) headers
 
