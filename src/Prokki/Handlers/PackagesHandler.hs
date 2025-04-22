@@ -21,7 +21,7 @@ packagesHandler req = do
       url = indexUrl <> path
 
   request <- C.parseRequest (T.unpack url)
-  response <- C.http request {C.decompress = const False} manager
+  response <- C.http request manager
   let status = C.responseStatus response
       headers = C.responseHeaders response
       body = C.responseBody response

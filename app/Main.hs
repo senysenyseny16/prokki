@@ -10,7 +10,7 @@ import Options.Applicative (execParser, fullDesc, helper, info, progDesc, (<**>)
 import Parser
 import qualified Prokki.Env as E
 import Prokki.Prokki (prokkiApp)
-import Prokki.Utils (prokkiVersion)
+import Prokki.Utils (noCompressionTlsManagerSettings, prokkiVersion)
 
 runProkki :: Args -> IO ()
 runProkki Args {..} = do
@@ -19,7 +19,7 @@ runProkki Args {..} = do
     logInfoN (T.pack (show index))
     logInfoN (T.pack (show cache))
 
-  cmanager <- C.newManager C.tlsManagerSettings
+  cmanager <- C.newManager noCompressionTlsManagerSettings
   let env = E.Env {E.address = address, E.index = index, E.cache = cache, E.manager = cmanager}
   run (E.port address) $ logStdout (prokkiApp env)
 

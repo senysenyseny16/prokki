@@ -1,6 +1,14 @@
 {-# LANGUAGE OverloadedStrings #-}
 
-module Prokki.Utils (replacePackageLink, compress, getPath, prokkiVersion, tempExt) where
+module Prokki.Utils
+  ( replacePackageLink,
+    compress,
+    getPath,
+    prokkiVersion,
+    tempExt,
+    noCompressionTlsManagerSettings,
+  )
+where
 
 import qualified Codec.Compression.GZip as GZip
 import qualified Data.ByteString.Lazy as LBS
@@ -10,6 +18,8 @@ import qualified Data.Text as T
 import Data.Text.Encoding (decodeUtf8, encodeUtf8)
 import Data.Version (showVersion)
 import Data.Void (Void)
+import Network.HTTP.Client.Conduit (managerModifyRequest)
+import qualified Network.HTTP.Conduit as C
 import Network.Wai (Request, pathInfo)
 import Paths_prokki (version)
 import Replace.Megaparsec (streamEdit)
@@ -18,6 +28,11 @@ import Text.Megaparsec.Char (string)
 
 compress :: LBS8.ByteString -> LBS8.ByteString
 compress = GZip.compressWith GZip.defaultCompressParams {GZip.compressLevel = GZip.bestCompression}
+
+noCompressionTlsManagerSettings :: C.ManagerSettings
+noCompressionTlsManagerSettings = C.tlsManagerSettings {managerModifyRequest = \req -> return req {C.requestHeaders = newHeaders req}}
+  where
+    newHeaders req = ("Accept-Encoding", "identity") : filter ((/= "Accept-Encoding") . fst) (C.requestHeaders req)
 
 replacePackageLink :: LBS.ByteString -> T.Text -> LBS.ByteString
 replacePackageLink input replacer =
