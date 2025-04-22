@@ -2,8 +2,9 @@
 {-# LANGUAGE RecordWildCards #-}
 {-# LANGUAGE ScopedTypeVariables #-}
 
-module Prokki.Cache (respondWithCache) where
+module Prokki.Cache (respondUsingCache) where
 
+import Conduit (MonadResource, MonadThrow)
 import qualified Control.Exception as E
 import Control.Monad.IO.Class (MonadIO, liftIO)
 import Control.Monad.IO.Unlift (MonadUnliftIO, withRunInIO)
@@ -12,7 +13,8 @@ import Data.ByteString.Builder (Builder, byteString)
 import Data.Conduit (ConduitT, ZipConduit (..), getZipConduit, runConduit, (.|))
 import qualified Data.Conduit.Combinators as CC
 import qualified Data.Text as T
-import Network.HTTP.Types (ResponseHeaders, Status)
+import qualified Network.HTTP.Conduit as C
+import Network.HTTP.Types (status200)
 import Network.Wai (Response, responseFile, responseStream)
 import Prokki.Env (Cache (..))
 import Prokki.Utils (tempExt)
@@ -20,8 +22,8 @@ import System.Directory (createDirectoryIfMissing, doesFileExist, removeFile, re
 import System.FilePath (takeDirectory, (</>))
 import System.IO (Handle, IOMode (WriteMode), hClose, openFile)
 
-respondWithCache :: (MonadUnliftIO m) => Cache -> FilePath -> Status -> ResponseHeaders -> ConduitT () ByteString m () -> m Response
-respondWithCache Cache {..} path status headers body = do
+respondUsingCache :: (MonadThrow m, MonadResource m, MonadUnliftIO m) => Cache -> C.Manager -> T.Text -> FilePath -> m Response
+respondUsingCache Cache {..} manager url path = do
   let packagePath = cacheDir </> T.unpack (T.pack path)
       tempPackagePath = packagePath <> tempExt
 
@@ -30,29 +32,33 @@ respondWithCache Cache {..} path status headers body = do
 
   if isPackageCached
     then do
-      pure $ responseFile status headers packagePath Nothing
-    else
-      if isTempFileExists -- temporary solution
-        then do
-          withRunInIO \unlift ->
-            pure $ responseStream status headers $ \rWrite rFlush -> do
-              unlift $ runConduit $ body .| CC.mapM_ (liftIO . rWrite . byteString)
-              rFlush
-        else do
-          withRunInIO \unlift ->
-            pure $ responseStream status headers $ \rWrite rFlush -> do
-              createDirectoryIfMissing True (takeDirectory packagePath)
-              E.bracketOnError
-                (openFile tempPackagePath WriteMode)
-                (cleanFile tempPackagePath)
-                ( \fHandle -> do
-                    E.catch
-                      (unlift $ runConduit $ body .| writeAndRespond fHandle rWrite)
-                      (\(_ :: IOError) -> cleanFile tempPackagePath fHandle)
-                    hClose fHandle
-                    renameFile tempPackagePath packagePath
-                    rFlush
-                )
+      pure $ responseFile status200 [] packagePath Nothing
+    else do
+      request <- C.parseRequest (T.unpack url)
+      response <- C.http request manager
+      let status = C.responseStatus response
+          headers = C.responseHeaders response
+          body = C.responseBody response
+
+      if isTempFileExists -- (caching in progress) temporary solution
+        then withRunInIO \unlift ->
+          pure $ responseStream status headers $ \rWrite rFlush -> do
+            unlift $ runConduit $ body .| CC.mapM_ (liftIO . rWrite . byteString)
+            rFlush
+        else withRunInIO \unlift ->
+          pure $ responseStream status headers $ \rWrite rFlush -> do
+            createDirectoryIfMissing True (takeDirectory packagePath)
+            E.bracketOnError
+              (openFile tempPackagePath WriteMode)
+              (cleanFile tempPackagePath)
+              ( \fHandle -> do
+                  E.catch
+                    (unlift $ runConduit $ body .| writeAndRespond fHandle rWrite)
+                    (\(_ :: IOError) -> cleanFile tempPackagePath fHandle)
+                  hClose fHandle
+                  renameFile tempPackagePath packagePath
+                  rFlush
+              )
 
 writeAndRespond :: (MonadIO m) => Handle -> (Builder -> IO ()) -> ConduitT ByteString o m ()
 writeAndRespond fHandle rWrite =

@@ -6,9 +6,8 @@ module Prokki.Handlers.PackagesHandler (packagesHandler) where
 
 import Control.Monad.Reader (ask)
 import qualified Data.Text as T
-import qualified Network.HTTP.Conduit as C
 import Network.Wai (Request, Response)
-import Prokki.Cache (respondWithCache)
+import Prokki.Cache (respondUsingCache)
 import Prokki.Env (Env (..), Index (..))
 import Prokki.Monad (ProkkiM)
 import Prokki.Utils (getPath)
@@ -20,10 +19,4 @@ packagesHandler req = do
       path = getPath req
       url = indexUrl <> path
 
-  request <- C.parseRequest (T.unpack url)
-  response <- C.http request manager
-  let status = C.responseStatus response
-      headers = C.responseHeaders response
-      body = C.responseBody response
-
-  respondWithCache cache (T.unpack path) status headers body
+  respondUsingCache cache manager url (T.unpack path)
