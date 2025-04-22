@@ -1,6 +1,6 @@
 {-# LANGUAGE OverloadedStrings #-}
 
-module Prokki.Utils (replacePackageLink, compress, getPath, prokkiVersion) where
+module Prokki.Utils (replacePackageLink, compress, getPath, prokkiVersion, tempExt) where
 
 import qualified Codec.Compression.GZip as GZip
 import qualified Data.ByteString.Lazy as LBS
@@ -33,6 +33,9 @@ packageLinkParser = string "href=\"" *> hostParser *> string "packages" $> ()
 
 getPath :: Request -> T.Text
 getPath = T.intercalate "/" . pathInfo
+
+tempExt :: String
+tempExt = ".tmp"
 
 prokkiVersion :: T.Text
 prokkiVersion = T.pack $ showVersion version
