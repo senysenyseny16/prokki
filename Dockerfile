@@ -2,11 +2,13 @@ FROM haskell:9.6.6 AS build
 
 WORKDIR /build
 COPY . .
-RUN --mount=type=cache,target=/build/.stack-work \
-    --mount=type=cache,target=/root/.stack \
-    stack install --local-bin-path .
+RUN stack install --local-bin-path .
 
 FROM debian:bookworm-slim
+LABEL org.opencontainers.image.source=https://github.com/senysenyseny16/prokki
+LABEL org.opencontainers.image.description="Python index reverse-proxy cache"
+LABEL org.opencontainers.image.licenses=BSD-3
+
 ARG DEBIAN_FRONTEND=noninteractive
 
 COPY --from=build /build/prokki /usr/bin/prokki
