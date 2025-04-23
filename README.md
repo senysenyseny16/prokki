@@ -30,5 +30,5 @@ docker run -it --rm ghcr.io/senysenyseny16/prokki --help
 
 - Specify it as the index for your package manager; in this example, `uv` is used:
 ```bash
-uv pip install torch --index http://<address>:<port>/simple
+uv pip install torch --index http://<host>:<port>/simple
 ```
