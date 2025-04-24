@@ -20,7 +20,7 @@ import Prokki.Env (Cache (..))
 import Prokki.Utils (tempExt)
 import System.Directory (createDirectoryIfMissing, doesFileExist, removeFile, renameFile)
 import System.FilePath (takeDirectory, (</>))
-import System.IO (Handle, IOMode (WriteMode), hClose, openFile)
+import System.IO (Handle, IOMode (WriteMode), hClose, openBinaryFile)
 
 respondUsingCache :: (MonadThrow m, MonadResource m, MonadUnliftIO m) => Cache -> C.Manager -> T.Text -> FilePath -> m Response
 respondUsingCache Cache {..} manager url path = do
@@ -49,7 +49,7 @@ respondUsingCache Cache {..} manager url path = do
           pure $ responseStream status headers $ \rWrite rFlush -> do
             createDirectoryIfMissing True (takeDirectory packagePath)
             E.bracketOnError
-              (openFile tempPackagePath WriteMode)
+              (openBinaryFile tempPackagePath WriteMode)
               (cleanFile tempPackagePath)
               ( \fHandle -> do
                   E.catch
