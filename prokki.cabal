@@ -83,6 +83,7 @@ executable prokki
     , bytestring
     , co-log
     , co-log-core
+    , co-log-concurrent
     , conduit
     , conduit-extra
     , directory

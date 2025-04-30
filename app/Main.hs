@@ -1,20 +1,22 @@
 {-# LANGUAGE OverloadedStrings #-}
 {-# LANGUAGE RecordWildCards #-}
+{-# LANGUAGE RankNTypes #-}
+{-# LANGUAGE BlockArguments #-}
 
-import Control.Monad.Logger (logInfoN, runStdoutLoggingT)
-import qualified Data.Text as T
 import qualified Network.HTTP.Conduit as C
 import Network.Wai.Handler.Warp (run)
-import Network.Wai.Middleware.RequestLogger (logStdout)
 import Options.Applicative (execParser, fullDesc, helper, info, progDesc, (<**>))
 import Parser
 import Prokki.Env
 import Prokki.Monad (ProkkiEnv)
 import Prokki.Prokki (prokkiApp)
 import Prokki.Type (Address (..))
-import Prokki.Utils (noCompressionTlsManagerSettings, prokkiVersion)
+import Prokki.Utils (noCompressionTlsManagerSettings)
 import Prokki.Middleware.RequestLogger (logRequests)
-import Colog (richMessageAction, cmapM, LogAction, Message)
+import Colog (richMessageAction)
+import Control.Monad.IO.Class (liftIO)
+import Colog.Concurrent (withBackgroundLogger, defCapacity)
+import Colog.Core.Action (hoistLogAction)
 
 runProkki :: Args -> IO ()
 runProkki Args {..} = do
@@ -23,12 +25,12 @@ runProkki Args {..} = do
   --  logInfoN (T.pack (show index))
   --  logInfoN (T.pack (show cache))
 
-  let logAction = richMessageAction
-  cmanager <- C.newManager noCompressionTlsManagerSettings
-  let prokkiEnv :: ProkkiEnv
-      prokkiEnv = Env {envAddress = address, envIndex = index, envCache = cache, envManager = cmanager, envLogAction = logAction}
+  withBackgroundLogger defCapacity richMessageAction (pure ()) \logAction -> do
+    cmanager <- C.newManager noCompressionTlsManagerSettings
+    let prokkiEnv :: ProkkiEnv
+        prokkiEnv = Env {envAddress = address, envIndex = index, envCache = cache, envManager = cmanager, envLogAction = hoistLogAction liftIO logAction}
 
-  run (port address) $ logRequests logAction (prokkiApp prokkiEnv)
+    run (port address) $ logRequests logAction (prokkiApp prokkiEnv)
 
 main :: IO ()
 main = runProkki =<< execParser opts
