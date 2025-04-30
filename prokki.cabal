@@ -5,7 +5,7 @@ cabal-version: 2.2
 -- see: https://github.com/sol/hpack
 
 name:           prokki
-version:        0.1.0
+version:        0.1.1
 description:    Please see the README on GitHub at <https://github.com/senysenyseny16/prokki#readme>
 homepage:       https://github.com/senysenyseny16/prokki#readme
 bug-reports:    https://github.com/senysenyseny16/prokki/issues
@@ -26,14 +26,14 @@ source-repository head
 
 library
   exposed-modules:
-      Prokki.Cache
       Prokki.Env
       Prokki.Handlers.ErrorHandler
-      Prokki.Handlers.PackagesHandler
       Prokki.Handlers.SimpleHandler
+      Prokki.Middleware.RequestLogger
       Prokki.Monad
       Prokki.Prokki
       Prokki.RequestDispatcher
+      Prokki.Type
       Prokki.Utils
   other-modules:
       Paths_prokki
@@ -45,6 +45,8 @@ library
   build-depends:
       base >=4.7 && <5
     , bytestring
+    , co-log
+    , co-log-core
     , conduit
     , conduit-extra
     , directory
@@ -79,6 +81,8 @@ executable prokki
   build-depends:
       base >=4.7 && <5
     , bytestring
+    , co-log
+    , co-log-core
     , conduit
     , conduit-extra
     , directory
@@ -114,6 +118,8 @@ test-suite prokki-test
   build-depends:
       base >=4.7 && <5
     , bytestring
+    , co-log
+    , co-log-core
     , conduit
     , conduit-extra
     , directory

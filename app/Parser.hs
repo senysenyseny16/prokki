@@ -4,7 +4,7 @@ module Parser (argsParser, Args (..)) where
 
 import qualified Data.Text as T
 import Options.Applicative
-import Prokki.Env
+import Prokki.Type
 
 data Args = Args
   { address :: Address,

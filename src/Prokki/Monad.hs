@@ -1,24 +1,26 @@
 {-# LANGUAGE GeneralizedNewtypeDeriving #-}
 
-module Prokki.Monad (ProkkiM, runProkkiM) where
+module Prokki.Monad (Prokki, unProkki, ProkkiEnv, runProkki) where
 
 import Control.Monad.Catch (MonadThrow)
 import Control.Monad.IO.Class (MonadIO)
 import Control.Monad.IO.Unlift (MonadUnliftIO)
-import Control.Monad.Logger (LoggingT, MonadLogger)
-import Control.Monad.Reader (MonadReader, ReaderT)
-import Control.Monad.Trans.Resource (MonadResource, ResourceT)
+import Control.Monad.Reader (MonadReader, ReaderT, runReaderT)
+import Control.Monad.Trans.Resource (MonadResource, ResourceT, liftResourceT)
 import Prokki.Env (Env)
 
-newtype ProkkiM a = ProkkiM {runProkkiM :: ReaderT Env (LoggingT (ResourceT IO)) a}
+type ProkkiEnv = Env Prokki
+
+newtype Prokki a = Prokki {unProkki :: ReaderT ProkkiEnv IO a}
   deriving
     ( Functor,
       Applicative,
       Monad,
       MonadIO,
-      MonadReader Env,
-      MonadLogger,
-      MonadResource,
+      MonadReader ProkkiEnv,
       MonadThrow,
       MonadUnliftIO
     )
+
+runProkki :: ProkkiEnv -> Prokki a -> IO a
+runProkki env prokki = runReaderT (unProkki prokki) env

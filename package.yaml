@@ -34,6 +34,8 @@ dependencies:
 - text
 - zlib
 - monad-logger
+- co-log
+- co-log-core
 - optparse-applicative
 
 ghc-options:

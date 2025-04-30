@@ -1,32 +1,45 @@
-module Prokki.Env
-  ( Env (..),
-    Address (..),
-    Index (..),
-    Cache (..),
-  )
-where
+{-# LANGUAGE FlexibleInstances #-}
+{-# LANGUAGE InstanceSigs #-}
+{-# LANGUAGE MultiParamTypeClasses #-}
+{-# LANGUAGE RankNTypes #-}
+{-# LANGUAGE ScopedTypeVariables #-}
+{-# LANGUAGE TypeApplications #-}
 
-import qualified Data.Text as T
-import qualified Network.HTTP.Conduit as C
+module Prokki.Env (Env (..), Has (..), grab) where
 
-data Env = Env
-  { address :: Address,
-    index :: Index,
-    cache :: Cache,
-    manager :: C.Manager
+import Colog (HasLog (..), LogAction, Message)
+import Control.Monad.Reader (MonadReader, asks)
+import Network.HTTP.Conduit (Manager)
+import Prokki.Type (Address, Cache, Index)
+
+data Env m = Env
+  { envAddress :: !Address,
+    envIndex :: !Index,
+    envCache :: !Cache,
+    envManager :: !Manager,
+    envLogAction :: !(LogAction m Message)
   }
 
-data Address = Address {host :: T.Text, port :: Int}
+instance HasLog (Env m) Message m where
+  getLogAction :: Env m -> LogAction m Message
+  getLogAction = envLogAction
+  {-# INLINE getLogAction #-}
 
-newtype Index = Index {indexUrl :: T.Text}
+  setLogAction :: LogAction m Message -> Env m -> Env m
+  setLogAction newLogAction env = env {envLogAction = newLogAction}
+  {-# INLINE setLogAction #-}
 
-newtype Cache = Cache {cacheDir :: FilePath}
+class Has field env where
+  obtain :: env -> field
 
-instance Show Address where
-  show (Address h p) = T.unpack h ++ ":" ++ show p
+instance Has Address (Env m) where obtain = envAddress
 
-instance Show Index where
-  show (Index url) = "Index: " ++ T.unpack url
+instance Has Index (Env m) where obtain = envIndex
 
-instance Show Cache where
-  show (Cache dir) = "Cache: " ++ dir
+instance Has Cache (Env m) where obtain = envCache
+
+instance Has Manager (Env m) where obtain = envManager
+
+grab :: forall field env m. (MonadReader env m, Has field env) => m field
+grab = asks $ obtain @field
+{-# INLINE grab #-}
