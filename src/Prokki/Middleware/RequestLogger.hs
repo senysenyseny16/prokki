@@ -1,13 +1,13 @@
 module Prokki.Middleware.RequestLogger (logRequests) where
 
-import Colog (LogAction, Message, Msg (..), Severity (..), cmapM, logMessagePure, simpleMsgStack, unLogAction, usingLoggerT, (<&))
+import Colog (LogAction, Message, Msg (..), Severity (..), (<&))
 import qualified Data.Text as T
 import Data.Text.Encoding (decodeUtf8)
-import GHC.Stack (callStack, HasCallStack)
+import GHC.Stack (HasCallStack, callStack)
 import Network.HTTP.Types (statusCode)
 import Network.Wai (Middleware, rawPathInfo, requestMethod, responseStatus)
 
-logRequests :: HasCallStack => LogAction IO Message -> Middleware
+logRequests :: (HasCallStack) => LogAction IO Message -> Middleware
 logRequests logAction app req respond = do
   let method = decodeUtf8 (requestMethod req)
       path = decodeUtf8 (rawPathInfo req)

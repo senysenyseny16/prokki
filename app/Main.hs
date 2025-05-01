@@ -1,20 +1,20 @@
-import Colog (hoistLogAction, richMessageAction, Msg (..), Severity (..), (<&))
+import Colog (Msg (..), Severity (..), hoistLogAction, richMessageAction, (<&))
 import Colog.Concurrent (defCapacity, withBackgroundLogger)
 import Control.Monad.IO.Class (liftIO)
+import qualified Data.Text as T
+import GHC.Stack (HasCallStack, callStack)
 import qualified Network.HTTP.Conduit as C
 import Network.Wai.Handler.Warp (run)
 import Options.Applicative (execParser, fullDesc, helper, info, progDesc, (<**>))
 import Parser
-import qualified Data.Text as T
 import Prokki.Env
 import Prokki.Middleware.RequestLogger (logRequests)
 import Prokki.Monad (ProkkiEnv)
-import GHC.Stack (callStack, HasCallStack)
 import Prokki.Prokki (prokkiApp)
 import Prokki.Type (Address (..))
 import Prokki.Utils (noCompressionTlsManagerSettings, prokkiVersion)
 
-runProkki :: HasCallStack => Args -> IO ()
+runProkki :: (HasCallStack) => Args -> IO ()
 runProkki Args {..} = do
   withBackgroundLogger defCapacity richMessageAction (pure ()) \logAction -> do
     cmanager <- C.newManager noCompressionTlsManagerSettings

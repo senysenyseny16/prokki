@@ -1,9 +1,4 @@
-module Prokki.Type
-  ( Address (..),
-    Index (..),
-    Cache (..),
-  )
-where
+module Prokki.Type (Address (..), Index (..), Cache (..)) where
 
 import qualified Data.Text as T
 
