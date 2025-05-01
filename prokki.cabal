@@ -46,7 +46,7 @@ library
       base >=4.7 && <5
     , bytestring
     , co-log
-    , co-log-core
+    , co-log-concurrent
     , conduit
     , conduit-extra
     , directory
@@ -82,7 +82,6 @@ executable prokki
       base >=4.7 && <5
     , bytestring
     , co-log
-    , co-log-core
     , co-log-concurrent
     , conduit
     , conduit-extra
@@ -120,7 +119,7 @@ test-suite prokki-test
       base >=4.7 && <5
     , bytestring
     , co-log
-    , co-log-core
+    , co-log-concurrent
     , conduit
     , conduit-extra
     , directory

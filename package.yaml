@@ -35,7 +35,7 @@ dependencies:
 - zlib
 - monad-logger
 - co-log
-- co-log-core
+- co-log-concurrent
 - optparse-applicative
 
 ghc-options:
