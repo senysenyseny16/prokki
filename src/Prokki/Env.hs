@@ -1,3 +1,5 @@
+{-# LANGUAGE ConstraintKinds #-}
+{-# LANGUAGE FlexibleContexts #-}
 {-# LANGUAGE FlexibleInstances #-}
 {-# LANGUAGE InstanceSigs #-}
 {-# LANGUAGE MultiParamTypeClasses #-}
@@ -5,7 +7,7 @@
 {-# LANGUAGE ScopedTypeVariables #-}
 {-# LANGUAGE TypeApplications #-}
 
-module Prokki.Env (Env (..), Has (..), grab) where
+module Prokki.Env (Env (..), Has (..), grab, WithAddress, WithIndex, WithCache, WithManager, WithSettings) where
 
 import Colog (HasLog (..), LogAction, Message)
 import Control.Monad.Reader (MonadReader, asks)
@@ -39,6 +41,16 @@ instance Has Index (Env m) where obtain = envIndex
 instance Has Cache (Env m) where obtain = envCache
 
 instance Has Manager (Env m) where obtain = envManager
+
+type WithAddress r m = (MonadReader r m, Has Address r)
+
+type WithIndex r m = (MonadReader r m, Has Index r)
+
+type WithCache r m = (MonadReader r m, Has Cache r)
+
+type WithManager r m = (MonadReader r m, Has Manager r)
+
+type WithSettings r m = (WithAddress r m, WithIndex r m, WithCache r m)
 
 grab :: forall field env m. (MonadReader env m, Has field env) => m field
 grab = asks $ obtain @field

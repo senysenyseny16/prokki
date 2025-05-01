@@ -2,6 +2,7 @@
 
 module Prokki.Monad (Prokki, unProkki, ProkkiEnv, runProkki) where
 
+import Conduit (MonadResource, ResourceT, runResourceT)
 import Control.Monad.Catch (MonadThrow)
 import Control.Monad.IO.Class (MonadIO)
 import Control.Monad.IO.Unlift (MonadUnliftIO)
@@ -10,7 +11,7 @@ import Prokki.Env (Env)
 
 type ProkkiEnv = Env Prokki
 
-newtype Prokki a = Prokki {unProkki :: ReaderT ProkkiEnv IO a}
+newtype Prokki a = Prokki {unProkki :: ReaderT ProkkiEnv (ResourceT IO) a}
   deriving
     ( Functor,
       Applicative,
@@ -18,8 +19,9 @@ newtype Prokki a = Prokki {unProkki :: ReaderT ProkkiEnv IO a}
       MonadIO,
       MonadReader ProkkiEnv,
       MonadThrow,
-      MonadUnliftIO
+      MonadUnliftIO,
+      MonadResource
     )
 
 runProkki :: ProkkiEnv -> Prokki a -> IO a
-runProkki env prokki = runReaderT (unProkki prokki) env
+runProkki env (Prokki action) = runResourceT $ runReaderT action env

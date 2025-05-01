@@ -4,7 +4,6 @@
 module Prokki.Handlers.SimpleHandler (simpleHandler) where
 
 import Control.Monad.IO.Class (MonadIO, liftIO)
-import Control.Monad.Reader (MonadReader)
 import qualified Data.ByteString.Char8 as BS
 import qualified Data.ByteString.Lazy as LBS
 import Data.Maybe
@@ -14,11 +13,11 @@ import Network.HTTP.Conduit (Manager)
 import qualified Network.HTTP.Conduit as C
 import Network.HTTP.Types (hContentLength)
 import Network.Wai (Request, Response, isSecure, requestHeaderHost, requestHeaders, responseLBS)
-import Prokki.Env (Has, grab)
+import Prokki.Env (WithIndex, WithManager, grab)
 import Prokki.Type (Index (..))
 import Prokki.Utils (getPath, replacePackageLink)
 
-simpleHandler :: (MonadIO m, MonadReader (env m) m, Has Index (env m), Has Manager (env m)) => Request -> m Response
+simpleHandler :: (MonadIO m, WithManager env m, WithIndex env m) => Request -> m Response
 simpleHandler req = do
   Index {..} <- grab @Index
   manager <- grab @Manager

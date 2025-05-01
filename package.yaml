@@ -52,6 +52,7 @@ default-extensions:
   - OverloadedStrings
   - BlockArguments
   - RecordWildCards
+  - PatternSynonyms
 
 library:
   source-dirs: src

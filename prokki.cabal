@@ -26,8 +26,10 @@ source-repository head
 
 library
   exposed-modules:
+      Prokki.Cache
       Prokki.Env
       Prokki.Handlers.ErrorHandler
+      Prokki.Handlers.PackagesHandler
       Prokki.Handlers.SimpleHandler
       Prokki.Middleware.RequestLogger
       Prokki.Monad
@@ -45,6 +47,7 @@ library
       OverloadedStrings
       BlockArguments
       RecordWildCards
+      PatternSynonyms
   ghc-options: -Wall -Wcompat -Widentities -Wincomplete-record-updates -Wincomplete-uni-patterns -Wmissing-export-lists -Wmissing-home-modules -Wpartial-fields -Wredundant-constraints
   build-depends:
       base >=4.7 && <5
@@ -84,6 +87,7 @@ executable prokki
       OverloadedStrings
       BlockArguments
       RecordWildCards
+      PatternSynonyms
   ghc-options: -Wall -Wcompat -Widentities -Wincomplete-record-updates -Wincomplete-uni-patterns -Wmissing-export-lists -Wmissing-home-modules -Wpartial-fields -Wredundant-constraints -threaded -rtsopts -with-rtsopts=-N
   build-depends:
       base >=4.7 && <5
@@ -124,6 +128,7 @@ test-suite prokki-test
       OverloadedStrings
       BlockArguments
       RecordWildCards
+      PatternSynonyms
   ghc-options: -Wall -Wcompat -Widentities -Wincomplete-record-updates -Wincomplete-uni-patterns -Wmissing-export-lists -Wmissing-home-modules -Wpartial-fields -Wredundant-constraints -threaded -rtsopts -with-rtsopts=-N
   build-depends:
       base >=4.7 && <5
