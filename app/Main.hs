@@ -1,29 +1,21 @@
-{-# LANGUAGE BlockArguments #-}
-{-# LANGUAGE OverloadedStrings #-}
-{-# LANGUAGE RankNTypes #-}
-{-# LANGUAGE RecordWildCards #-}
-
-import Colog (hoistLogAction, richMessageAction)
+import Colog (hoistLogAction, richMessageAction, Msg (..), Severity (..), (<&))
 import Colog.Concurrent (defCapacity, withBackgroundLogger)
 import Control.Monad.IO.Class (liftIO)
 import qualified Network.HTTP.Conduit as C
 import Network.Wai.Handler.Warp (run)
 import Options.Applicative (execParser, fullDesc, helper, info, progDesc, (<**>))
 import Parser
+import qualified Data.Text as T
 import Prokki.Env
 import Prokki.Middleware.RequestLogger (logRequests)
 import Prokki.Monad (ProkkiEnv)
+import GHC.Stack (callStack, HasCallStack)
 import Prokki.Prokki (prokkiApp)
 import Prokki.Type (Address (..))
-import Prokki.Utils (noCompressionTlsManagerSettings)
+import Prokki.Utils (noCompressionTlsManagerSettings, prokkiVersion)
 
-runProkki :: Args -> IO ()
+runProkki :: HasCallStack => Args -> IO ()
 runProkki Args {..} = do
-  -- runStdoutLoggingT $ do
-  --  logInfoN ("Prokki v" <> prokkiVersion <> " on " <> T.pack (show address))
-  --  logInfoN (T.pack (show index))
-  --  logInfoN (T.pack (show cache))
-
   withBackgroundLogger defCapacity richMessageAction (pure ()) \logAction -> do
     cmanager <- C.newManager noCompressionTlsManagerSettings
     let prokkiEnv :: ProkkiEnv
@@ -35,6 +27,11 @@ runProkki Args {..} = do
               envManager = cmanager,
               envLogAction = hoistLogAction liftIO logAction
             }
+        prokkiInfo = "Prokki v" <> prokkiVersion <> " on " <> T.pack (show address)
+
+    logAction <& (Msg {msgText = prokkiInfo, msgSeverity = Info, msgStack = callStack})
+    logAction <& (Msg {msgText = T.pack (show index), msgSeverity = Info, msgStack = callStack})
+    logAction <& (Msg {msgText = T.pack (show cache), msgSeverity = Info, msgStack = callStack})
 
     run (port address) $ logRequests logAction (prokkiApp prokkiEnv)
 

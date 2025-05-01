@@ -1,7 +1,6 @@
 module Prokki.Prokki (prokkiApp) where
 
 import Control.Monad.IO.Class (liftIO)
-import Control.Monad.Logger (runStdoutLoggingT)
 import Control.Monad.Reader (runReaderT)
 import Control.Monad.Trans.Resource (runResourceT)
 import Network.Wai (Application, Request, Response)

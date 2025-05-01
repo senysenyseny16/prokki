@@ -41,6 +41,10 @@ library
       Paths_prokki
   hs-source-dirs:
       src
+  default-extensions:
+      OverloadedStrings
+      BlockArguments
+      RecordWildCards
   ghc-options: -Wall -Wcompat -Widentities -Wincomplete-record-updates -Wincomplete-uni-patterns -Wmissing-export-lists -Wmissing-home-modules -Wpartial-fields -Wredundant-constraints
   build-depends:
       base >=4.7 && <5
@@ -55,7 +59,6 @@ library
     , http-conduit
     , http-types
     , megaparsec
-    , monad-logger
     , mtl
     , optparse-applicative
     , replace-megaparsec
@@ -77,6 +80,10 @@ executable prokki
       Paths_prokki
   hs-source-dirs:
       app
+  default-extensions:
+      OverloadedStrings
+      BlockArguments
+      RecordWildCards
   ghc-options: -Wall -Wcompat -Widentities -Wincomplete-record-updates -Wincomplete-uni-patterns -Wmissing-export-lists -Wmissing-home-modules -Wpartial-fields -Wredundant-constraints -threaded -rtsopts -with-rtsopts=-N
   build-depends:
       base >=4.7 && <5
@@ -91,7 +98,6 @@ executable prokki
     , http-conduit
     , http-types
     , megaparsec
-    , monad-logger
     , mtl
     , optparse-applicative
     , prokki
@@ -114,6 +120,10 @@ test-suite prokki-test
       Paths_prokki
   hs-source-dirs:
       test
+  default-extensions:
+      OverloadedStrings
+      BlockArguments
+      RecordWildCards
   ghc-options: -Wall -Wcompat -Widentities -Wincomplete-record-updates -Wincomplete-uni-patterns -Wmissing-export-lists -Wmissing-home-modules -Wpartial-fields -Wredundant-constraints -threaded -rtsopts -with-rtsopts=-N
   build-depends:
       base >=4.7 && <5
@@ -128,7 +138,6 @@ test-suite prokki-test
     , http-conduit
     , http-types
     , megaparsec
-    , monad-logger
     , mtl
     , optparse-applicative
     , prokki
