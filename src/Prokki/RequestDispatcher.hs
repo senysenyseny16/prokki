@@ -5,7 +5,6 @@ import Prokki.Handlers.ErrorHandler (errorHandler)
 import Prokki.Handlers.PackagesHandler (packagesHandler)
 import Prokki.Handlers.SimpleHandler (simpleHandler)
 import Prokki.Monad (Prokki)
-import Prelude hiding (log)
 
 requestDispatcher :: Request -> Prokki Response
 requestDispatcher req = do
