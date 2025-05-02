@@ -1,6 +1,3 @@
-{-# LANGUAGE FlexibleContexts #-}
-{-# LANGUAGE TypeApplications #-}
-
 module Prokki.Handlers.SimpleHandler (simpleHandler) where
 
 import Control.Monad.IO.Class (MonadIO, liftIO)

@@ -1,7 +1,3 @@
-{-# LANGUAGE FlexibleContexts #-}
-{-# LANGUAGE ScopedTypeVariables #-}
-{-# LANGUAGE TypeApplications #-}
-
 module Prokki.Handlers.PackagesHandler (packagesHandler) where
 
 import Control.Monad.Catch (MonadThrow)
