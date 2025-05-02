@@ -8,12 +8,13 @@ import Network.HTTP.Types (statusCode)
 import Network.Wai (Middleware, Request, Response, httpVersion, rawPathInfo, remoteHost, requestMethod, responseStatus)
 
 logRequests :: (HasCallStack) => LogAction IO Message -> Middleware
-logRequests logAction app req respond = do
-  app req \res -> do
-    let status = statusCode (responseStatus res)
-        severity = if status == 200 then Info else Warning
-    logAction <& (Msg {msgText = requestMsg req res, msgSeverity = severity, msgStack = callStack})
-    respond res
+logRequests logAction app req respond = app req respond'
+  where
+    respond' res = do
+      let status = statusCode (responseStatus res)
+          severity = if status == 200 then Info else Warning
+      logAction <& (Msg {msgText = requestMsg req res, msgSeverity = severity, msgStack = callStack})
+      respond res
 
 requestMsg :: Request -> Response -> T.Text
 requestMsg req res =
