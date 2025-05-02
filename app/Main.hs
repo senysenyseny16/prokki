@@ -13,11 +13,13 @@ import Prokki.Monad (ProkkiEnv)
 import Prokki.Prokki (prokkiApp)
 import Prokki.Type (Address (..))
 import Prokki.Utils (noCompressionTlsManagerSettings, prokkiVersion)
+import qualified Control.Monad.Trans.Resource as Resource
 
 runProkki :: (HasCallStack) => Args -> IO ()
 runProkki Args {..} = do
   withBackgroundLogger defCapacity richMessageAction (pure ()) \logAction -> do
     cmanager <- C.newManager noCompressionTlsManagerSettings
+    releaseMap <- Resource.createInternalState 
     let prokkiEnv :: ProkkiEnv
         prokkiEnv =
           Env
@@ -25,7 +27,8 @@ runProkki Args {..} = do
               envIndex = index,
               envCache = cache,
               envManager = cmanager,
-              envLogAction = hoistLogAction liftIO logAction
+              envLogAction = hoistLogAction liftIO logAction,
+              envReleaseMap = releaseMap
             }
         prokkiInfo = "Prokki v" <> prokkiVersion <> " on " <> T.pack (show address)
 
