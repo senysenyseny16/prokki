@@ -11,13 +11,15 @@ import Colog (HasLog (..), LogAction, Message)
 import Control.Monad.Reader (MonadReader, asks)
 import Network.HTTP.Conduit (Manager)
 import Prokki.Type (Address, Cache, Index)
+import qualified Control.Monad.Trans.Resource as Resource
 
 data Env m = Env
   { envAddress :: !Address,
     envIndex :: !Index,
     envCache :: !Cache,
     envManager :: !Manager,
-    envLogAction :: !(LogAction m Message)
+    envLogAction :: !(LogAction m Message),
+    envReleaseMap :: Resource.InternalState
   }
 
 instance HasLog (Env m) Message m where
