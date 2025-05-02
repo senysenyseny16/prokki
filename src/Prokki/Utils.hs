@@ -1,5 +1,3 @@
-{-# LANGUAGE OverloadedStrings #-}
-
 module Prokki.Utils
   ( replacePackageLink,
     compress,
@@ -48,9 +46,11 @@ packageLinkParser = string "href=\"" *> hostParser *> string "packages" $> ()
 
 getPath :: Request -> T.Text
 getPath = T.intercalate "/" . pathInfo
+{-# INLINE getPath #-}
 
 tempExt :: String
 tempExt = ".tmp"
+{-# INLINE tempExt #-}
 
 prokkiVersion :: T.Text
 prokkiVersion = T.pack $ showVersion version

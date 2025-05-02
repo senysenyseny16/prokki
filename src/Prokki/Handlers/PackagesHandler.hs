@@ -1,22 +1,25 @@
-{-# LANGUAGE BlockArguments #-}
-{-# LANGUAGE RecordWildCards #-}
-{-# LANGUAGE ScopedTypeVariables #-}
-
 module Prokki.Handlers.PackagesHandler (packagesHandler) where
 
-import Control.Monad.Reader (ask)
+import Control.Monad.Catch (MonadThrow)
+import Control.Monad.IO.Unlift (MonadUnliftIO)
+import Control.Monad.Trans.Resource (MonadResource)
 import qualified Data.Text as T
+import Network.HTTP.Conduit (Manager)
 import Network.Wai (Request, Response)
 import Prokki.Cache (respondUsingCache)
-import Prokki.Env (Env (..), Index (..))
-import Prokki.Monad (ProkkiM)
+import Prokki.Env (WithCache, WithIndex, WithManager, grab)
+import Prokki.Type (Cache, Index (..))
 import Prokki.Utils (getPath)
 
-packagesHandler :: Request -> ProkkiM Response
+packagesHandler ::
+  (MonadResource m, MonadThrow m, MonadUnliftIO m, WithIndex env m, WithCache env m, WithManager env m) =>
+  Request ->
+  m Response
 packagesHandler req = do
-  Env {..} <- ask
-  let Index {..} = index
-      path = getPath req
+  Index {..} <- grab @Index
+  cache <- grab @Cache
+  manager <- grab @Manager
+  let path = getPath req
       url = indexUrl <> path
 
   respondUsingCache cache manager url (T.unpack path)

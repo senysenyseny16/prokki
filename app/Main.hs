@@ -1,27 +1,39 @@
-{-# LANGUAGE OverloadedStrings #-}
-{-# LANGUAGE RecordWildCards #-}
-
-import Control.Monad.Logger (logInfoN, runStdoutLoggingT)
+import Colog (Msg (..), Severity (..), hoistLogAction, richMessageAction, (<&))
+import Colog.Concurrent (defCapacity, withBackgroundLogger)
+import Control.Monad.IO.Class (liftIO)
 import qualified Data.Text as T
+import GHC.Stack (HasCallStack, callStack)
 import qualified Network.HTTP.Conduit as C
 import Network.Wai.Handler.Warp (run)
-import Network.Wai.Middleware.RequestLogger (logStdout)
 import Options.Applicative (execParser, fullDesc, helper, info, progDesc, (<**>))
 import Parser
-import qualified Prokki.Env as E
+import Prokki.Env
+import Prokki.Middleware.RequestLogger (logRequests)
+import Prokki.Monad (ProkkiEnv)
 import Prokki.Prokki (prokkiApp)
+import Prokki.Type (Address (..))
 import Prokki.Utils (noCompressionTlsManagerSettings, prokkiVersion)
 
-runProkki :: Args -> IO ()
+runProkki :: (HasCallStack) => Args -> IO ()
 runProkki Args {..} = do
-  runStdoutLoggingT $ do
-    logInfoN ("Prokki v" <> prokkiVersion <> " on " <> T.pack (show address))
-    logInfoN (T.pack (show index))
-    logInfoN (T.pack (show cache))
+  withBackgroundLogger defCapacity richMessageAction (pure ()) \logAction -> do
+    cmanager <- C.newManager noCompressionTlsManagerSettings
+    let prokkiEnv :: ProkkiEnv
+        prokkiEnv =
+          Env
+            { envAddress = address,
+              envIndex = index,
+              envCache = cache,
+              envManager = cmanager,
+              envLogAction = hoistLogAction liftIO logAction
+            }
+        prokkiInfo = "Prokki v" <> prokkiVersion <> " on " <> T.pack (show address)
 
-  cmanager <- C.newManager noCompressionTlsManagerSettings
-  let env = E.Env {E.address = address, E.index = index, E.cache = cache, E.manager = cmanager}
-  run (E.port address) $ logStdout (prokkiApp env)
+    logAction <& (Msg {msgText = prokkiInfo, msgSeverity = Info, msgStack = callStack})
+    logAction <& (Msg {msgText = T.pack (show index), msgSeverity = Info, msgStack = callStack})
+    logAction <& (Msg {msgText = T.pack (show cache), msgSeverity = Info, msgStack = callStack})
+
+    run (port address) $ logRequests logAction (prokkiApp prokkiEnv)
 
 main :: IO ()
 main = runProkki =<< execParser opts

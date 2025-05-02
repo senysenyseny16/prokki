@@ -1,13 +1,12 @@
-{-# LANGUAGE BlockArguments #-}
-{-# LANGUAGE RecordWildCards #-}
 {-# LANGUAGE ScopedTypeVariables #-}
 
 module Prokki.Cache (respondUsingCache) where
 
-import Conduit (MonadResource, MonadThrow)
 import qualified Control.Exception as E
+import Control.Monad.Catch (MonadThrow)
 import Control.Monad.IO.Class (MonadIO, liftIO)
 import Control.Monad.IO.Unlift (MonadUnliftIO, withRunInIO)
+import Control.Monad.Trans.Resource (MonadResource)
 import Data.ByteString (ByteString)
 import Data.ByteString.Builder (Builder, byteString)
 import Data.Conduit (ConduitT, ZipConduit (..), getZipConduit, runConduit, (.|))
@@ -16,7 +15,7 @@ import qualified Data.Text as T
 import qualified Network.HTTP.Conduit as C
 import Network.HTTP.Types (status200)
 import Network.Wai (Response, responseFile, responseStream)
-import Prokki.Env (Cache (..))
+import Prokki.Type (Cache (..))
 import Prokki.Utils (tempExt)
 import System.Directory (createDirectoryIfMissing, doesFileExist, removeFile, renameFile)
 import System.FilePath (takeDirectory, (</>))

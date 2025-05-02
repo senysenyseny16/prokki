@@ -1,26 +1,24 @@
-{-# LANGUAGE OverloadedStrings #-}
-{-# LANGUAGE RecordWildCards #-}
-
 module Prokki.Handlers.SimpleHandler (simpleHandler) where
 
-import Control.Monad.Reader (ask)
+import Control.Monad.IO.Class (MonadIO, liftIO)
 import qualified Data.ByteString.Char8 as BS
 import qualified Data.ByteString.Lazy as LBS
 import Data.Maybe
 import qualified Data.Text as T
 import Data.Text.Encoding (decodeUtf8)
+import Network.HTTP.Conduit (Manager)
 import qualified Network.HTTP.Conduit as C
 import Network.HTTP.Types (hContentLength)
 import Network.Wai (Request, Response, isSecure, requestHeaderHost, requestHeaders, responseLBS)
-import Prokki.Env (Env (..), Index (..))
-import Prokki.Monad (ProkkiM)
+import Prokki.Env (WithIndex, WithManager, grab)
+import Prokki.Type (Index (..))
 import Prokki.Utils (getPath, replacePackageLink)
 
-simpleHandler :: Request -> ProkkiM Response
+simpleHandler :: (MonadIO m, WithManager env m, WithIndex env m) => Request -> m Response
 simpleHandler req = do
-  Env {..} <- ask
-  let Index {..} = index
-      url = indexUrl <> getPath req
+  Index {..} <- grab @Index
+  manager <- grab @Manager
+  let url = indexUrl <> getPath req
       reqHeaders = requestHeaders req
       xfp = lookup "X-Forwarded-Proto" reqHeaders
       scheme = case xfp of
@@ -29,7 +27,7 @@ simpleHandler req = do
       host = fromMaybe (error "Host header now found") $ requestHeaderHost req
       addr = scheme <> "://" <> decodeUtf8 host
 
-  request <- C.parseRequest (T.unpack url)
+  request <- liftIO $ C.parseRequest (T.unpack url)
   response <- C.httpLbs request manager
   let headers = C.responseHeaders response
       newBody = replacePackageLink (C.responseBody response) addr

@@ -33,7 +33,8 @@ dependencies:
 - bytestring
 - text
 - zlib
-- monad-logger
+- co-log
+- co-log-concurrent
 - optparse-applicative
 
 ghc-options:
@@ -46,6 +47,14 @@ ghc-options:
 - -Wmissing-home-modules
 - -Wpartial-fields
 - -Wredundant-constraints
+
+default-extensions:
+  - OverloadedStrings
+  - BlockArguments
+  - RecordWildCards
+  - PatternSynonyms
+  - TypeApplications
+  - FlexibleContexts
 
 library:
   source-dirs: src

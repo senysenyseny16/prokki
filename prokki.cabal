@@ -5,7 +5,7 @@ cabal-version: 2.2
 -- see: https://github.com/sol/hpack
 
 name:           prokki
-version:        0.1.0
+version:        0.1.1
 description:    Please see the README on GitHub at <https://github.com/senysenyseny16/prokki#readme>
 homepage:       https://github.com/senysenyseny16/prokki#readme
 bug-reports:    https://github.com/senysenyseny16/prokki/issues
@@ -31,9 +31,11 @@ library
       Prokki.Handlers.ErrorHandler
       Prokki.Handlers.PackagesHandler
       Prokki.Handlers.SimpleHandler
+      Prokki.Middleware.RequestLogger
       Prokki.Monad
       Prokki.Prokki
       Prokki.RequestDispatcher
+      Prokki.Type
       Prokki.Utils
   other-modules:
       Paths_prokki
@@ -41,10 +43,19 @@ library
       Paths_prokki
   hs-source-dirs:
       src
+  default-extensions:
+      OverloadedStrings
+      BlockArguments
+      RecordWildCards
+      PatternSynonyms
+      TypeApplications
+      FlexibleContexts
   ghc-options: -Wall -Wcompat -Widentities -Wincomplete-record-updates -Wincomplete-uni-patterns -Wmissing-export-lists -Wmissing-home-modules -Wpartial-fields -Wredundant-constraints
   build-depends:
       base >=4.7 && <5
     , bytestring
+    , co-log
+    , co-log-concurrent
     , conduit
     , conduit-extra
     , directory
@@ -53,7 +64,6 @@ library
     , http-conduit
     , http-types
     , megaparsec
-    , monad-logger
     , mtl
     , optparse-applicative
     , replace-megaparsec
@@ -75,10 +85,19 @@ executable prokki
       Paths_prokki
   hs-source-dirs:
       app
+  default-extensions:
+      OverloadedStrings
+      BlockArguments
+      RecordWildCards
+      PatternSynonyms
+      TypeApplications
+      FlexibleContexts
   ghc-options: -Wall -Wcompat -Widentities -Wincomplete-record-updates -Wincomplete-uni-patterns -Wmissing-export-lists -Wmissing-home-modules -Wpartial-fields -Wredundant-constraints -threaded -rtsopts -with-rtsopts=-N
   build-depends:
       base >=4.7 && <5
     , bytestring
+    , co-log
+    , co-log-concurrent
     , conduit
     , conduit-extra
     , directory
@@ -87,7 +106,6 @@ executable prokki
     , http-conduit
     , http-types
     , megaparsec
-    , monad-logger
     , mtl
     , optparse-applicative
     , prokki
@@ -110,10 +128,19 @@ test-suite prokki-test
       Paths_prokki
   hs-source-dirs:
       test
+  default-extensions:
+      OverloadedStrings
+      BlockArguments
+      RecordWildCards
+      PatternSynonyms
+      TypeApplications
+      FlexibleContexts
   ghc-options: -Wall -Wcompat -Widentities -Wincomplete-record-updates -Wincomplete-uni-patterns -Wmissing-export-lists -Wmissing-home-modules -Wpartial-fields -Wredundant-constraints -threaded -rtsopts -with-rtsopts=-N
   build-depends:
       base >=4.7 && <5
     , bytestring
+    , co-log
+    , co-log-concurrent
     , conduit
     , conduit-extra
     , directory
@@ -122,7 +149,6 @@ test-suite prokki-test
     , http-conduit
     , http-types
     , megaparsec
-    , monad-logger
     , mtl
     , optparse-applicative
     , prokki
