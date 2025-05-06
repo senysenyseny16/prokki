@@ -2,6 +2,16 @@
 
 All notable changes to this project will be documented in this file.
 
+## [0.2.0] - 2025-05-06
+
+### 🚀 Features
+
+- Support multiple indexes
+
+### 🚜 Refactor
+
+- ReaderT
+
 ## [0.1.1] - 2025-04-24
 
 ### 🐛 Bug Fixes
@@ -11,6 +21,10 @@ All notable changes to this project will be documented in this file.
 ### 📚 Documentation
 
 - Address -> host
+
+### ⚙️ Miscellaneous Tasks
+
+- Bump version to 0.1.1
 
 ## [0.1.0] - 2025-04-23
 
