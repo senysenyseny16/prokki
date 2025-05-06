@@ -9,7 +9,7 @@ reducing bandwidth usage, improving install speeds, and enhancing reliability in
 
 ### Usage
 
-- Create a configuration file, for example:
+- Create a configuration file, `config.toml` for example:
 
 ```toml
 host = "0.0.0.0"
