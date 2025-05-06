@@ -1,4 +1,4 @@
-module Prokki.Handlers.SimpleHandler (simpleHandler) where
+module Prokki.Handlers.IndexHandler (indexHandler) where
 
 import Control.Monad.IO.Class (MonadIO, liftIO)
 import qualified Data.ByteString.Char8 as BS
@@ -10,15 +10,14 @@ import Network.HTTP.Conduit (Manager)
 import qualified Network.HTTP.Conduit as C
 import Network.HTTP.Types (hContentLength)
 import Network.Wai (Request, Response, isSecure, requestHeaderHost, requestHeaders, responseLBS)
-import Prokki.Env (WithIndex, WithManager, grab)
-import Prokki.Type (Index (..))
-import Prokki.Utils (getPath, replacePackageLink)
+import Prokki.Env (WithManager, grab)
+import Prokki.Type (Index (..), Path)
+import Prokki.Utils (replacePackageLink)
 
-simpleHandler :: (MonadIO m, WithManager env m, WithIndex env m) => Request -> m Response
-simpleHandler req = do
-  Index {..} <- grab @Index
+indexHandler :: (MonadIO m, WithManager env m) => Request -> Index -> Path -> m Response
+indexHandler req Index {..} reqPath = do
   manager <- grab @Manager
-  let url = indexUrl <> getPath req
+  let url = origin <> path <> "/" <> T.intercalate "/" reqPath
       reqHeaders = requestHeaders req
       xfp = lookup "X-Forwarded-Proto" reqHeaders
       scheme = case xfp of
@@ -30,7 +29,7 @@ simpleHandler req = do
   request <- liftIO $ C.parseRequest (T.unpack url)
   response <- C.httpLbs request manager
   let headers = C.responseHeaders response
-      newBody = replacePackageLink (C.responseBody response) addr
+      newBody = replacePackageLink (C.responseBody response) addr index
       bodyLength = LBS.length newBody
       newHeaders = (hContentLength, BS.pack $ show bodyLength) : filter (\(h, _) -> h /= hContentLength) headers
 

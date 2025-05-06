@@ -27,10 +27,11 @@ source-repository head
 library
   exposed-modules:
       Prokki.Cache
+      Prokki.Config
       Prokki.Env
       Prokki.Handlers.ErrorHandler
-      Prokki.Handlers.PackagesHandler
-      Prokki.Handlers.SimpleHandler
+      Prokki.Handlers.IndexHandler
+      Prokki.Handlers.PackageHandler
       Prokki.Middleware.RequestLogger
       Prokki.Monad
       Prokki.Prokki
@@ -58,6 +59,7 @@ library
     , co-log-concurrent
     , conduit
     , conduit-extra
+    , containers
     , directory
     , exceptions
     , filepath
@@ -65,15 +67,16 @@ library
     , http-types
     , megaparsec
     , mtl
+    , network-uri
     , optparse-applicative
     , replace-megaparsec
     , resourcet
     , text
+    , tomland
     , unliftio-core
     , wai
     , wai-extra
     , warp
-    , zlib
   default-language: Haskell2010
 
 executable prokki
@@ -100,6 +103,7 @@ executable prokki
     , co-log-concurrent
     , conduit
     , conduit-extra
+    , containers
     , directory
     , exceptions
     , filepath
@@ -107,16 +111,17 @@ executable prokki
     , http-types
     , megaparsec
     , mtl
+    , network-uri
     , optparse-applicative
     , prokki
     , replace-megaparsec
     , resourcet
     , text
+    , tomland
     , unliftio-core
     , wai
     , wai-extra
     , warp
-    , zlib
   default-language: Haskell2010
 
 test-suite prokki-test
@@ -143,6 +148,7 @@ test-suite prokki-test
     , co-log-concurrent
     , conduit
     , conduit-extra
+    , containers
     , directory
     , exceptions
     , filepath
@@ -150,14 +156,15 @@ test-suite prokki-test
     , http-types
     , megaparsec
     , mtl
+    , network-uri
     , optparse-applicative
     , prokki
     , replace-megaparsec
     , resourcet
     , text
+    , tomland
     , unliftio-core
     , wai
     , wai-extra
     , warp
-    , zlib
   default-language: Haskell2010

@@ -16,4 +16,4 @@ RUN apt update && apt install -y --no-install-recommends ca-certificates && rm -
 
 EXPOSE 8080
 ENTRYPOINT ["prokki"]
-CMD ["--host", "0.0.0.0", "--port", "8080", "--index-url", "https://pypi.org/", "--cache-dir", "/index-cache"]
+CMD ["--config", "/config.toml"]

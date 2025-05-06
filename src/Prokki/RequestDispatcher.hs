@@ -1,14 +1,24 @@
 module Prokki.RequestDispatcher (requestDispatcher) where
 
+import qualified Data.Map as M
 import Network.Wai (Request, Response, pathInfo)
+import Prokki.Env (grab)
 import Prokki.Handlers.ErrorHandler (errorHandler)
-import Prokki.Handlers.PackagesHandler (packagesHandler)
-import Prokki.Handlers.SimpleHandler (simpleHandler)
+import Prokki.Handlers.IndexHandler (indexHandler)
+import Prokki.Handlers.PackageHandler (packageHandler)
 import Prokki.Monad (Prokki)
+import Prokki.Type (Indexes)
+import Prokki.Utils (isPackage)
 
 requestDispatcher :: Request -> Prokki Response
 requestDispatcher req = do
+  indexes <- grab @Indexes
   case pathInfo req of
-    ("simple" : _) -> simpleHandler req
-    ("packages" : _) -> packagesHandler req
+    (index : path) ->
+      -- scheme://host/index/*, where * is path
+      maybe (errorHandler req) dispatch (M.lookup index indexes)
+      where
+        dispatch index'
+          | isPackage path = packageHandler req index' path -- package (file)
+          | otherwise = indexHandler req index' path -- html
     _ -> errorHandler req

@@ -20,6 +20,7 @@ dependencies:
 - warp
 - http-conduit
 - http-types
+- network-uri
 - conduit
 - conduit-extra
 - resourcet
@@ -31,10 +32,11 @@ dependencies:
 - filepath
 - directory
 - bytestring
+- containers
 - text
-- zlib
 - co-log
 - co-log-concurrent
+- tomland
 - optparse-applicative
 
 ghc-options:
