@@ -12,6 +12,10 @@ import Prokki.Type (Cache, Index (..), Path)
 import Prokki.Utils (escapeUnreservedChars)
 import System.FilePath ((</>))
 
+-- | The handler caches packages, including their metadata.
+-- If a package is already cached, the handler returns it directly;
+-- otherwise, it simultaneously initiates downloading the package from the index,
+-- caching it, and delivering it to the client.
 packageHandler ::
   (MonadResource m, MonadThrow m, MonadUnliftIO m, WithManager env m, WithCache env m) =>
   Request ->
