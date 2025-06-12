@@ -1,5 +1,5 @@
 {
-  inputs.nixpkgs.url = "github:nixos/nixpkgs/nixos-24.11";
+  inputs.nixpkgs.url = "github:nixos/nixpkgs/nixos-25.05";
   inputs.flake-utils.url = "github:numtide/flake-utils";
 
   outputs =
@@ -12,7 +12,7 @@
       system:
       let
         pkgs = nixpkgs.legacyPackages.${system};
-        hPkgs = pkgs.haskell.packages."ghc966";
+        hPkgs = pkgs.haskell.packages."ghc984";
 
         myDevTools = [
           hPkgs.ghc
