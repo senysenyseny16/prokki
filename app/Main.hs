@@ -15,9 +15,11 @@ import Prokki.Monad (ProkkiEnv)
 import Prokki.Prokki (prokkiApp)
 import Prokki.Type (Address (..))
 import Prokki.Utils (noCompressionTlsManagerSettings, prokkiVersion)
+import System.IO (BufferMode (..), hSetBuffering, stdout)
 
 runProkki :: (HasCallStack) => Args -> IO ()
 runProkki Args {..} = do
+  hSetBuffering stdout LineBuffering
   Config {..} <- loadConfig configPath
   withBackgroundLogger defCapacity richMessageAction (pure ()) \logAction -> do
     cmanager <- C.newManager noCompressionTlsManagerSettings
