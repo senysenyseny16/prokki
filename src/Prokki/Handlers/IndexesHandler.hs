@@ -28,6 +28,7 @@ indexesPage addr indexes = H.docTypeHtml $ do
     H.h1 "Proxied Indexes"
     H.table H.! A.border "1" $ do
       H.tr $ do
+        H.th "Index"
         H.th "Proxy"
         H.th "Origin"
       mapM_ renderIndex indexes
@@ -36,5 +37,6 @@ indexesPage addr indexes = H.docTypeHtml $ do
     renderIndex Index {..} = H.tr $ do
       let index' = addr <> "/" <> index
           origin' = origin <> path
+      H.td $ H.toHtml index
       H.td $ H.a H.! href (H.toValue index') $ H.toHtml index'
       H.td $ H.a H.! href (H.toValue origin') $ H.toHtml origin'
