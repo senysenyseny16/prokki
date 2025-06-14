@@ -37,6 +37,7 @@ dependencies:
 - co-log
 - co-log-concurrent
 - tomland
+- filemanip
 - optparse-applicative
 
 ghc-options:

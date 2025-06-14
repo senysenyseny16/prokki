@@ -6,10 +6,14 @@ module Prokki.Utils
     isPackage,
     hostParser,
     parseUrl,
+    cleanTempFiles,
+    countFiles,
     prokkiVersion,
   )
 where
 
+import Colog (Message, WithLog, log, pattern W)
+import Control.Monad.IO.Class (MonadIO (liftIO))
 import qualified Data.Text as T
 import Data.Version (showVersion)
 import Data.Void (Void)
@@ -17,8 +21,11 @@ import Network.HTTP.Client.Conduit (managerModifyRequest)
 import qualified Network.HTTP.Conduit as C
 import Network.URI (URI (uriAuthority, uriPath, uriScheme), escapeURIString, isUnreserved, parseAbsoluteURI, uriRegName)
 import Paths_prokki (version)
+import System.Directory (removeFile)
+import System.FilePath.Find (always, extension, find, (==?))
 import Text.Megaparsec (MonadParsec (takeWhileP), Parsec, try, (<|>))
 import Text.Megaparsec.Char (char, string)
+import Prelude hiding (log)
 
 noCompressionTlsManagerSettings :: C.ManagerSettings
 noCompressionTlsManagerSettings = C.tlsManagerSettings {managerModifyRequest = \req -> return req {C.requestHeaders = newHeaders req}}
@@ -42,6 +49,21 @@ parseUrl url = do
   let origin = T.pack $ uriScheme uri ++ "//" ++ uriRegName auth
       path = T.dropWhileEnd (== '/') $ T.pack (uriPath uri)
   return (origin, path)
+
+cleanTempFiles :: (MonadIO m, WithLog env Message m) => FilePath -> m ()
+cleanTempFiles dir = do
+  tempFiles <- liftIO $ find always (extension ==? tempExt) dir
+  mapM_
+    ( \file -> do
+        log W $ "Removing temporary file: " <> T.pack file
+        liftIO $ removeFile file
+    )
+    tempFiles
+
+countFiles :: FilePath -> IO Int
+countFiles dir = do
+  files <- find always always dir
+  return $ length files
 
 tempExt :: String
 tempExt = ".tmp"

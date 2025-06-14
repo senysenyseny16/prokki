@@ -1,4 +1,4 @@
-import Colog (Msg (..), Severity (..), hoistLogAction, richMessageAction, (<&))
+import Colog (Msg (..), Severity (..), hoistLogAction, richMessageAction, usingLoggerT, (<&))
 import Colog.Concurrent (defCapacity, withBackgroundLogger)
 import Control.Monad.IO.Class (liftIO)
 import qualified Data.Map as M
@@ -13,8 +13,8 @@ import Prokki.Env
 import Prokki.Middleware.RequestLogger (logRequests)
 import Prokki.Monad (ProkkiEnv)
 import Prokki.Prokki (prokkiApp)
-import Prokki.Type (Address (..))
-import Prokki.Utils (noCompressionTlsManagerSettings, prokkiVersion)
+import Prokki.Type (Address (..), Cache (..))
+import Prokki.Utils (cleanTempFiles, countFiles, noCompressionTlsManagerSettings, prokkiVersion)
 import System.IO (BufferMode (..), hSetBuffering, stdout)
 
 runProkki :: (HasCallStack) => Args -> IO ()
@@ -22,6 +22,9 @@ runProkki Args {..} = do
   hSetBuffering stdout LineBuffering
   Config {..} <- loadConfig configPath
   withBackgroundLogger defCapacity richMessageAction (pure ()) \logAction -> do
+    usingLoggerT logAction do
+      cleanTempFiles (cacheDir cache)
+
     cmanager <- C.newManager noCompressionTlsManagerSettings
     let prokkiEnv :: ProkkiEnv
         prokkiEnv =
@@ -38,6 +41,9 @@ runProkki Args {..} = do
     logAction <& (Msg {msgText = T.pack (show cache), msgSeverity = Info, msgStack = callStack})
     let logIndex index = logAction <& (Msg {msgText = T.pack (show index), msgSeverity = Info, msgStack = callStack})
     mapM_ logIndex (M.elems indexes)
+
+    cachedPkgs <- countFiles (cacheDir cache)
+    logAction <& (Msg {msgText = "Total packages in cache: " <> T.pack (show cachedPkgs), msgSeverity = Info, msgStack = callStack})
 
     run (port address) $ logRequests logAction (prokkiApp prokkiEnv)
 
