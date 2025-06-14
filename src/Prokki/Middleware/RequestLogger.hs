@@ -12,7 +12,7 @@ logRequests logAction app req respond = app req respond'
   where
     respond' res = do
       let status = statusCode (responseStatus res)
-          severity = if status == 200 then Info else Warning
+          severity = if status == 200 || status == 301 then Info else Warning
       logAction <& (Msg {msgText = requestMsg req res, msgSeverity = severity, msgStack = callStack})
       respond res
 
