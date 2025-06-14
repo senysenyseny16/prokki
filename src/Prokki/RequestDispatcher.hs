@@ -1,7 +1,8 @@
 module Prokki.RequestDispatcher (requestDispatcher) where
 
 import qualified Data.Map as M
-import Network.Wai (Request, Response, pathInfo)
+import Network.HTTP.Types (hLocation, status301)
+import Network.Wai (Request, Response, pathInfo, responseLBS)
 import Prokki.Env (grab)
 import Prokki.Handlers.ErrorHandler (errorHandler)
 import Prokki.Handlers.FaviconHandler (faviconHandler)
@@ -16,6 +17,7 @@ requestDispatcher :: Request -> Prokki Response
 requestDispatcher req = do
   indexes <- grab @Indexes
   case pathInfo req of
+    [] -> pure $ responseLBS status301 [(hLocation, "/indexes")] "Redirecting to /indexes"
     ["favicon.ico"] -> faviconHandler req
     ["indexes"] -> indexesHandler req -- page with proxied indexes
     (index : path) ->
@@ -25,4 +27,3 @@ requestDispatcher req = do
         dispatch index'
           | isPackage path = packageHandler req index' path -- package (file)
           | otherwise = indexHandler req index' path -- html
-    _ -> errorHandler req
