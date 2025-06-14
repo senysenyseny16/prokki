@@ -1,3 +1,5 @@
+{-# LANGUAGE TemplateHaskell #-}
+
 module Prokki.Utils
   ( noCompressionTlsManagerSettings,
     escapeUnreservedChars,
@@ -10,11 +12,14 @@ module Prokki.Utils
     cleanTempFiles,
     countFiles,
     prokkiVersion,
+    favicon,
   )
 where
 
 import Colog (Message, WithLog, log, pattern W)
 import Control.Monad.IO.Class (MonadIO (liftIO))
+import qualified Data.ByteString.Lazy as BSL
+import Data.FileEmbed (embedFile)
 import Data.Maybe (fromMaybe)
 import qualified Data.Text as T
 import Data.Text.Encoding (decodeUtf8)
@@ -99,3 +104,6 @@ isPackage xs = any (`T.isSuffixOf` last xs) packageExts
 
 prokkiVersion :: T.Text
 prokkiVersion = T.pack $ showVersion version
+
+favicon :: BSL.ByteString
+favicon = BSL.fromStrict $(embedFile "static/favicon.ico")

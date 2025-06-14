@@ -30,6 +30,7 @@ library
       Prokki.Config
       Prokki.Env
       Prokki.Handlers.ErrorHandler
+      Prokki.Handlers.FaviconHandler
       Prokki.Handlers.IndexesHandler
       Prokki.Handlers.IndexHandler
       Prokki.Handlers.PackageHandler
@@ -64,6 +65,7 @@ library
     , containers
     , directory
     , exceptions
+    , file-embed
     , filemanip
     , filepath
     , http-conduit
@@ -110,6 +112,7 @@ executable prokki
     , containers
     , directory
     , exceptions
+    , file-embed
     , filemanip
     , filepath
     , http-conduit
@@ -157,6 +160,7 @@ test-suite prokki-test
     , containers
     , directory
     , exceptions
+    , file-embed
     , filemanip
     , filepath
     , http-conduit
