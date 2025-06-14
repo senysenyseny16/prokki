@@ -5,6 +5,7 @@ import Network.Wai (Request, Response, pathInfo)
 import Prokki.Env (grab)
 import Prokki.Handlers.ErrorHandler (errorHandler)
 import Prokki.Handlers.IndexHandler (indexHandler)
+import Prokki.Handlers.IndexesHandler (indexesHandler)
 import Prokki.Handlers.PackageHandler (packageHandler)
 import Prokki.Monad (Prokki)
 import Prokki.Type (Indexes)
@@ -14,6 +15,7 @@ requestDispatcher :: Request -> Prokki Response
 requestDispatcher req = do
   indexes <- grab @Indexes
   case pathInfo req of
+    ["indexes"] -> indexesHandler req -- page with proxied indexes
     (index : path) ->
       -- scheme://host/index/*, where * is path
       maybe (errorHandler req) dispatch (M.lookup index indexes)

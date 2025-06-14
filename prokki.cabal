@@ -30,6 +30,7 @@ library
       Prokki.Config
       Prokki.Env
       Prokki.Handlers.ErrorHandler
+      Prokki.Handlers.IndexesHandler
       Prokki.Handlers.IndexHandler
       Prokki.Handlers.PackageHandler
       Prokki.Middleware.RequestLogger
@@ -54,6 +55,7 @@ library
   ghc-options: -Wall -Wcompat -Widentities -Wincomplete-record-updates -Wincomplete-uni-patterns -Wmissing-export-lists -Wmissing-home-modules -Wpartial-fields -Wredundant-constraints
   build-depends:
       base >=4.7 && <5
+    , blaze-html
     , bytestring
     , co-log
     , co-log-concurrent
@@ -99,6 +101,7 @@ executable prokki
   ghc-options: -Wall -Wcompat -Widentities -Wincomplete-record-updates -Wincomplete-uni-patterns -Wmissing-export-lists -Wmissing-home-modules -Wpartial-fields -Wredundant-constraints -threaded -rtsopts -with-rtsopts=-N
   build-depends:
       base >=4.7 && <5
+    , blaze-html
     , bytestring
     , co-log
     , co-log-concurrent
@@ -145,6 +148,7 @@ test-suite prokki-test
   ghc-options: -Wall -Wcompat -Widentities -Wincomplete-record-updates -Wincomplete-uni-patterns -Wmissing-export-lists -Wmissing-home-modules -Wpartial-fields -Wredundant-constraints -threaded -rtsopts -with-rtsopts=-N
   build-depends:
       base >=4.7 && <5
+    , blaze-html
     , bytestring
     , co-log
     , co-log-concurrent

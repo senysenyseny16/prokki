@@ -4,17 +4,16 @@ import Control.Monad.IO.Class (MonadIO, liftIO)
 import qualified Data.ByteString.Char8 as BS
 import qualified Data.ByteString.Lazy as LBS
 import qualified Data.ByteString.Lazy.Char8 as LBS8
-import Data.Maybe (fromMaybe)
 import qualified Data.Text as T
 import Data.Text.Encoding (decodeUtf8, encodeUtf8)
 import Data.Void (Void)
 import Network.HTTP.Conduit (Manager)
 import qualified Network.HTTP.Conduit as C
 import Network.HTTP.Types (hContentLength)
-import Network.Wai (Request, Response, isSecure, requestHeaderHost, requestHeaders, responseLBS)
+import Network.Wai (Request, Response, responseLBS)
 import Prokki.Env (WithManager, grab)
 import Prokki.Type (Index (..), PackageLinkType (..), Path)
-import Prokki.Utils (hostParser)
+import Prokki.Utils (hostParser, remoteAddress)
 import Replace.Megaparsec (streamEdit)
 import Text.Megaparsec (Parsec, try, (<|>))
 import Text.Megaparsec.Char (string)
@@ -27,13 +26,7 @@ indexHandler :: (MonadIO m, WithManager env m) => Request -> Index -> Path -> m 
 indexHandler req Index {..} reqPath = do
   manager <- grab @Manager
   let url = origin <> path <> "/" <> T.intercalate "/" reqPath
-      reqHeaders = requestHeaders req
-      xfp = lookup "X-Forwarded-Proto" reqHeaders
-      scheme = case xfp of
-        Just proto -> decodeUtf8 proto
-        Nothing -> if isSecure req then "https" else "http"
-      host = fromMaybe (error "Host header now found") $ requestHeaderHost req
-      addr = scheme <> "://" <> decodeUtf8 host
+      addr = remoteAddress req
 
   request <- liftIO $ C.parseRequest (T.unpack url)
   response <- C.httpLbs request manager

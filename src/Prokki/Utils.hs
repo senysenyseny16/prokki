@@ -1,6 +1,7 @@
 module Prokki.Utils
   ( noCompressionTlsManagerSettings,
     escapeUnreservedChars,
+    remoteAddress,
     tempExt,
     packageExts,
     isPackage,
@@ -14,15 +15,18 @@ where
 
 import Colog (Message, WithLog, log, pattern W)
 import Control.Monad.IO.Class (MonadIO (liftIO))
+import Data.Maybe (fromMaybe)
 import qualified Data.Text as T
+import Data.Text.Encoding (decodeUtf8)
 import Data.Version (showVersion)
 import Data.Void (Void)
 import Network.HTTP.Client.Conduit (managerModifyRequest)
 import qualified Network.HTTP.Conduit as C
 import Network.URI (URI (uriAuthority, uriPath, uriScheme), escapeURIString, isUnreserved, parseAbsoluteURI, uriRegName)
+import Network.Wai (Request, isSecure, requestHeaderHost, requestHeaders)
 import Paths_prokki (version)
 import System.Directory (removeFile)
-import System.FilePath.Find (always, extension, find, (==?))
+import System.FilePath.Find (FileType (RegularFile), always, extension, fileType, find, (==?))
 import Text.Megaparsec (MonadParsec (takeWhileP), Parsec, try, (<|>))
 import Text.Megaparsec.Char (char, string)
 import Prelude hiding (log)
@@ -34,6 +38,16 @@ noCompressionTlsManagerSettings = C.tlsManagerSettings {managerModifyRequest = \
 
 escapeUnreservedChars :: T.Text -> T.Text
 escapeUnreservedChars url = T.pack $ escapeURIString isUnreserved (T.unpack url)
+
+remoteAddress :: Request -> T.Text
+remoteAddress req = do
+  let reqHeaders = requestHeaders req
+      xfp = lookup "X-Forwarded-Proto" reqHeaders
+      scheme = case xfp of
+        Just proto -> decodeUtf8 proto
+        Nothing -> if isSecure req then "https" else "http"
+      host = fromMaybe (error "Host header now found") $ requestHeaderHost req
+  scheme <> "://" <> decodeUtf8 host
 
 hostParser :: Parsec Void T.Text T.Text
 hostParser = do
@@ -62,7 +76,7 @@ cleanTempFiles dir = do
 
 countFiles :: FilePath -> IO Int
 countFiles dir = do
-  files <- find always always dir
+  files <- find always (fileType ==? RegularFile) dir
   return $ length files
 
 tempExt :: String
