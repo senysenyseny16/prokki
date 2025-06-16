@@ -93,6 +93,7 @@ packageExts :: [T.Text]
 packageExts =
   [ ".whl", -- wheels
     ".gz", -- sources
+    ".zip", -- sources
     ".metadata", -- metadata
     ".asc" -- GPG signature
   ]
