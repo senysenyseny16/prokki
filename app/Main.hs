@@ -1,4 +1,4 @@
-import Colog (hoistLogAction, log, richMessageAction, usingLoggerT, pattern I)
+import Colog (filterBySeverity, hoistLogAction, log, msgSeverity, richMessageAction, usingLoggerT, pattern I)
 import Colog.Concurrent (defCapacity, withBackgroundLogger)
 import Control.Monad.IO.Class (liftIO)
 import qualified Data.Map as M
@@ -31,8 +31,10 @@ runProkki Args {..} = do
       mapM_ (log I . T.pack . show) (M.elems indexes)
       cachedPkgs <- liftIO $ countFiles (cacheDir cache)
       log I $ "Total packages in cache: " <> T.pack (show cachedPkgs)
+      log I $ "Log severity: " <> T.pack (show logSeverity)
 
     cmanager <- C.newManager noCompressionTlsManagerSettings
+    let mainLogAction = filterBySeverity logSeverity msgSeverity logAction
     let prokkiEnv :: ProkkiEnv
         prokkiEnv =
           Env
@@ -40,10 +42,10 @@ runProkki Args {..} = do
               envIndexes = indexes,
               envCache = cache,
               envManager = cmanager,
-              envLogAction = hoistLogAction liftIO logAction
+              envLogAction = hoistLogAction liftIO mainLogAction
             }
 
-    run (port address) $ logRequests logAction (prokkiApp prokkiEnv)
+    run (port address) $ logRequests mainLogAction (prokkiApp prokkiEnv)
 
 main :: IO ()
 main = runProkki =<< execParser opts

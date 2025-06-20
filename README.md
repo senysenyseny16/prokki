@@ -17,6 +17,8 @@ port = 8080
 
 cache = "index-cache"
 
+log.severity = "Info"
+
 [[index]]
 name = "pypi"
 url = "https://pypi.org/simple"
