@@ -2,6 +2,20 @@
 
 All notable changes to this project will be documented in this file.
 
+## [0.2.9] - 2025-09-12
+
+### 🐛 Bug Fixes
+
+- Handle index (upstream) request errors
+
+### 📚 Documentation
+
+- Update changelog
+
+### ⚙️ Miscellaneous Tasks
+
+- Update flake
+
 ## [0.2.8] - 2025-06-20
 
 ### 🚀 Features
