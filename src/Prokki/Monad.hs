@@ -3,7 +3,7 @@
 module Prokki.Monad (Prokki, unProkki, ProkkiEnv, runProkki) where
 
 import Conduit (MonadResource, ResourceT, runResourceT)
-import Control.Monad.Catch (MonadThrow)
+import Control.Monad.Catch (MonadCatch, MonadThrow)
 import Control.Monad.IO.Class (MonadIO)
 import Control.Monad.IO.Unlift (MonadUnliftIO)
 import Control.Monad.Reader (MonadReader, ReaderT, runReaderT)
@@ -19,6 +19,7 @@ newtype Prokki a = Prokki {unProkki :: ReaderT ProkkiEnv (ResourceT IO) a}
       MonadIO,
       MonadReader ProkkiEnv,
       MonadThrow,
+      MonadCatch,
       MonadUnliftIO,
       MonadResource
     )
