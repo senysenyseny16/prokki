@@ -2,6 +2,12 @@
 
 All notable changes to this project will be documented in this file.
 
+## [0.2.10] - 2025-09-13
+
+### 🚀 Features
+
+- Handlers statistics (counters)
+
 ## [0.2.9] - 2025-09-12
 
 ### 🐛 Bug Fixes
@@ -15,6 +21,7 @@ All notable changes to this project will be documented in this file.
 ### ⚙️ Miscellaneous Tasks
 
 - Update flake
+- Bump version to 0.2.9
 
 ## [0.2.8] - 2025-06-20
 
