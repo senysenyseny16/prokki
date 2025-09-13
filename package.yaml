@@ -26,6 +26,7 @@ dependencies:
 - conduit-extra
 - resourcet
 - unliftio-core
+- stm
 - megaparsec
 - replace-megaparsec
 - mtl

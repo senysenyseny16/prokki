@@ -1,7 +1,9 @@
 import Colog (filterBySeverity, hoistLogAction, log, msgSeverity, richMessageAction, usingLoggerT, pattern I)
 import Colog.Concurrent (defCapacity, withBackgroundLogger)
+import Control.Concurrent.STM (newTVarIO)
 import Control.Monad.IO.Class (liftIO)
 import qualified Data.Map as M
+import qualified Data.Map.Strict as SM
 import qualified Data.Text as T
 import GHC.Stack (HasCallStack)
 import qualified Network.HTTP.Conduit as C
@@ -34,6 +36,7 @@ runProkki Args {..} = do
       log I $ "Log severity: " <> T.pack (show logSeverity)
 
     cmanager <- C.newManager noCompressionTlsManagerSettings
+    requestCounters <- newTVarIO SM.empty
     let mainLogAction = filterBySeverity logSeverity msgSeverity logAction
     let prokkiEnv :: ProkkiEnv
         prokkiEnv =
@@ -42,7 +45,8 @@ runProkki Args {..} = do
               envIndexes = indexes,
               envCache = cache,
               envManager = cmanager,
-              envLogAction = hoistLogAction liftIO mainLogAction
+              envLogAction = hoistLogAction liftIO mainLogAction,
+              envRequestCounters = requestCounters
             }
 
     run (port address) $ logRequests mainLogAction (prokkiApp prokkiEnv)

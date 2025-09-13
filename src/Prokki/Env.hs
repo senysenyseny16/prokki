@@ -5,19 +5,21 @@
 {-# LANGUAGE RankNTypes #-}
 {-# LANGUAGE ScopedTypeVariables #-}
 
-module Prokki.Env (Env (..), Has (..), grab, WithAddress, WithIndexes, WithCache, WithManager, WithSettings) where
+module Prokki.Env (Env (..), Has (..), grab, WithAddress, WithIndexes, WithCache, WithManager, WithSettings, WithRequestCounters) where
 
 import Colog (HasLog (..), LogAction, Message)
+import Control.Concurrent.STM (TVar)
 import Control.Monad.Reader (MonadReader, asks)
 import Network.HTTP.Conduit (Manager)
-import Prokki.Type (Address, Cache, Indexes)
+import Prokki.Type (Address, Cache, Indexes, RequestCounters)
 
 data Env m = Env
   { envAddress :: !Address,
     envIndexes :: !Indexes,
     envCache :: !Cache,
     envManager :: !Manager,
-    envLogAction :: !(LogAction m Message)
+    envLogAction :: !(LogAction m Message),
+    envRequestCounters :: TVar RequestCounters
   }
 
 instance HasLog (Env m) Message m where
@@ -40,6 +42,8 @@ instance Has Cache (Env m) where obtain = envCache
 
 instance Has Manager (Env m) where obtain = envManager
 
+instance Has (TVar RequestCounters) (Env m) where obtain = envRequestCounters
+
 type WithAddress r m = (MonadReader r m, Has Address r)
 
 type WithIndexes r m = (MonadReader r m, Has Indexes r)
@@ -49,6 +53,8 @@ type WithCache r m = (MonadReader r m, Has Cache r)
 type WithManager r m = (MonadReader r m, Has Manager r)
 
 type WithSettings r m = (WithAddress r m, WithIndexes r m, WithCache r m)
+
+type WithRequestCounters r m = (MonadReader r m, Has (TVar RequestCounters) r)
 
 grab :: forall field env m. (MonadReader env m, Has field env) => m field
 grab = asks $ obtain @field

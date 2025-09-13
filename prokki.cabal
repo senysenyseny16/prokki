@@ -76,6 +76,7 @@ library
     , optparse-applicative
     , replace-megaparsec
     , resourcet
+    , stm
     , text
     , tomland
     , unliftio-core
@@ -124,6 +125,7 @@ executable prokki
     , prokki
     , replace-megaparsec
     , resourcet
+    , stm
     , text
     , tomland
     , unliftio-core
@@ -172,6 +174,7 @@ test-suite prokki-test
     , prokki
     , replace-megaparsec
     , resourcet
+    , stm
     , text
     , tomland
     , unliftio-core
