@@ -9,7 +9,7 @@ reducing bandwidth usage, improving install speeds, and enhancing reliability in
 
 ### Usage
 
-- Create a configuration file, `config.toml` for example:
+Create a configuration file, `config.toml` for example:
 
 ```toml
 host = "0.0.0.0"
@@ -28,12 +28,12 @@ name = "torch-cu118"
 url = "https://download.pytorch.org/whl/cu118"
 ```
 
-- Create a volume for packages (you can also mount a folder instead):
+Create a volume for packages (you can also mount a folder instead):
 ```bash
 docker volume create prokki-packages-cache
 ```
 
-- Start Prokki:
+Start Prokki:
 ```bash
 docker run \
     --detach \
@@ -44,15 +44,14 @@ docker run \
     ghcr.io/senysenyseny16/prokki
 ```
 
-By default it:
-- listens on port 8080 (in this example, it's mapped to port 5000)
+By default it listens on port 8080 (in this example, it's mapped to port 5000).
 
 You can view available options using the following command:
 ```bash
 docker run -it --rm ghcr.io/senysenyseny16/prokki --help
 ```
 
-- Specify it as the index for your package manager; in this example, `uv` is used:
+Specify it as the index for your package manager; in this example, `uv` is used:
 ```bash
 uv pip install torch --index http://<host>:<port>/<index>
 ```
