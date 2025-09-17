@@ -5,11 +5,24 @@
 {-# LANGUAGE RankNTypes #-}
 {-# LANGUAGE ScopedTypeVariables #-}
 
-module Prokki.Env (Env (..), Has (..), grab, WithAddress, WithIndexes, WithCache, WithManager, WithSettings, WithRequestCounters) where
+module Prokki.Env
+  ( Env (..),
+    Has (..),
+    grab,
+    WithAddress,
+    WithIndexes,
+    WithCache,
+    WithManager,
+    WithSettings,
+    WithRequestCounters,
+    WithStartTime,
+  )
+where
 
 import Colog (HasLog (..), LogAction, Message)
 import Control.Concurrent.STM (TVar)
 import Control.Monad.Reader (MonadReader, asks)
+import Data.Time.Clock (UTCTime)
 import Network.HTTP.Conduit (Manager)
 import Prokki.Type (Address, Cache, Indexes, RequestCounters)
 
@@ -19,7 +32,8 @@ data Env m = Env
     envCache :: !Cache,
     envManager :: !Manager,
     envLogAction :: !(LogAction m Message),
-    envRequestCounters :: TVar RequestCounters
+    envRequestCounters :: TVar RequestCounters,
+    envStartTime :: UTCTime
   }
 
 instance HasLog (Env m) Message m where
@@ -44,6 +58,8 @@ instance Has Manager (Env m) where obtain = envManager
 
 instance Has (TVar RequestCounters) (Env m) where obtain = envRequestCounters
 
+instance Has UTCTime (Env m) where obtain = envStartTime
+
 type WithAddress r m = (MonadReader r m, Has Address r)
 
 type WithIndexes r m = (MonadReader r m, Has Indexes r)
@@ -55,6 +71,8 @@ type WithManager r m = (MonadReader r m, Has Manager r)
 type WithSettings r m = (WithAddress r m, WithIndexes r m, WithCache r m)
 
 type WithRequestCounters r m = (MonadReader r m, Has (TVar RequestCounters) r)
+
+type WithStartTime r m = (MonadReader r m, Has UTCTime r)
 
 grab :: forall field env m. (MonadReader env m, Has field env) => m field
 grab = asks $ obtain @field

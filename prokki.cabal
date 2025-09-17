@@ -70,6 +70,7 @@ library
     , filepath
     , http-conduit
     , http-types
+    , human-readable-duration
     , megaparsec
     , mtl
     , network-uri
@@ -78,6 +79,7 @@ library
     , resourcet
     , stm
     , text
+    , time
     , tomland
     , unliftio-core
     , wai
@@ -118,6 +120,7 @@ executable prokki
     , filepath
     , http-conduit
     , http-types
+    , human-readable-duration
     , megaparsec
     , mtl
     , network-uri
@@ -127,6 +130,7 @@ executable prokki
     , resourcet
     , stm
     , text
+    , time
     , tomland
     , unliftio-core
     , wai
@@ -167,6 +171,7 @@ test-suite prokki-test
     , filepath
     , http-conduit
     , http-types
+    , human-readable-duration
     , megaparsec
     , mtl
     , network-uri
@@ -176,6 +181,7 @@ test-suite prokki-test
     , resourcet
     , stm
     , text
+    , time
     , tomland
     , unliftio-core
     , wai

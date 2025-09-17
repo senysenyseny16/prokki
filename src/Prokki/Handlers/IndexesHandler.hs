@@ -2,11 +2,13 @@ module Prokki.Handlers.IndexesHandler (indexesHandler) where
 
 import Control.Concurrent.STM (TVar, readTVarIO)
 import Control.Monad.IO.Class (MonadIO (liftIO))
+import Data.Duration (humanReadableDuration)
 import qualified Data.Map.Strict as SM
 import qualified Data.Text as T
+import Data.Time.Clock (NominalDiffTime, UTCTime, diffUTCTime, getCurrentTime)
 import Network.HTTP.Types (status200)
 import Network.Wai (Request, Response, responseLBS)
-import Prokki.Env (WithIndexes, WithRequestCounters, grab)
+import Prokki.Env (WithIndexes, WithRequestCounters, WithStartTime, grab)
 import Prokki.Type (Index (..), Indexes, RequestCounters)
 import Prokki.Utils (remoteAddress)
 import Text.Blaze.Html.Renderer.Utf8 (renderHtml)
@@ -15,16 +17,19 @@ import qualified Text.Blaze.Html4.FrameSet.Attributes as A
 import qualified Text.Blaze.Html5 as H
 
 -- | The handler renders table with proxied indexes.
-indexesHandler :: (MonadIO m, WithIndexes env m, WithRequestCounters env m) => Request -> m Response
+indexesHandler :: (MonadIO m, WithIndexes env m, WithRequestCounters env m, WithStartTime env m) => Request -> m Response
 indexesHandler req = do
   indexes <- grab @Indexes
   requestCounters <- grab @(TVar RequestCounters) >>= liftIO . readTVarIO
+  startTime <- grab @UTCTime
+  nowTime <- liftIO getCurrentTime
   let addr = remoteAddress req
-      htmlPage = renderHtml $ indexesPage addr indexes requestCounters
+      uptime = diffUTCTime nowTime startTime
+      htmlPage = renderHtml $ indexesPage addr indexes requestCounters uptime
   pure $ responseLBS status200 [("Content-Type", "text/html")] htmlPage
 
-indexesPage :: T.Text -> Indexes -> RequestCounters -> H.Html
-indexesPage addr indexes requestCounters = H.docTypeHtml $ do
+indexesPage :: T.Text -> Indexes -> RequestCounters -> NominalDiffTime -> H.Html
+indexesPage addr indexes requestCounters uptime = H.docTypeHtml $ do
   H.head $ do
     H.title "Prokki Indexes"
   H.body $ do
@@ -36,10 +41,11 @@ indexesPage addr indexes requestCounters = H.docTypeHtml $ do
         H.th "Origin"
       mapM_ renderIndex indexes
 
+    H.h1 "Statistics"
+    H.p $ H.toHtml ("Uptime: " <> humanReadableDuration (realToFrac uptime))
     if SM.null requestCounters
       then mempty
       else do
-        H.h1 "Statistics"
         H.table H.! A.border "1" $ do
           H.tr $ do
             H.th "Handler"

@@ -36,6 +36,8 @@ dependencies:
 - bytestring
 - containers
 - text
+- time
+- human-readable-duration
 - co-log
 - co-log-concurrent
 - tomland

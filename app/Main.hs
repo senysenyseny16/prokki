@@ -5,6 +5,7 @@ import Control.Monad.IO.Class (liftIO)
 import qualified Data.Map as M
 import qualified Data.Map.Strict as SM
 import qualified Data.Text as T
+import Data.Time.Clock (getCurrentTime)
 import GHC.Stack (HasCallStack)
 import qualified Network.HTTP.Conduit as C
 import Network.Wai.Handler.Warp (run)
@@ -37,6 +38,7 @@ runProkki Args {..} = do
 
     cmanager <- C.newManager noCompressionTlsManagerSettings
     requestCounters <- newTVarIO SM.empty
+    startTime <- getCurrentTime
     let mainLogAction = filterBySeverity logSeverity msgSeverity logAction
     let prokkiEnv :: ProkkiEnv
         prokkiEnv =
@@ -46,7 +48,8 @@ runProkki Args {..} = do
               envCache = cache,
               envManager = cmanager,
               envLogAction = hoistLogAction liftIO mainLogAction,
-              envRequestCounters = requestCounters
+              envRequestCounters = requestCounters,
+              envStartTime = startTime
             }
 
     run (port address) $ logRequests mainLogAction (prokkiApp prokkiEnv)
