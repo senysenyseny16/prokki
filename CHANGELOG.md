@@ -2,11 +2,25 @@
 
 All notable changes to this project will be documented in this file.
 
+## [0.2.11] - 2025-09-17
+
+### 🚀 Features
+
+- Uptime statistics
+
+### 📚 Documentation
+
+- Style
+
 ## [0.2.10] - 2025-09-13
 
 ### 🚀 Features
 
 - Handlers statistics (counters)
+
+### ⚙️ Miscellaneous Tasks
+
+- Bump version to 0.2.10
 
 ## [0.2.9] - 2025-09-12
 
