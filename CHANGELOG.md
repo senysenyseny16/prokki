@@ -2,6 +2,12 @@
 
 All notable changes to this project will be documented in this file.
 
+## [0.2.12] - 2025-10-16
+
+### 🚀 Features
+
+- Response timeout
+
 ## [0.2.11] - 2025-09-17
 
 ### 🚀 Features
@@ -11,6 +17,10 @@ All notable changes to this project will be documented in this file.
 ### 📚 Documentation
 
 - Style
+
+### ⚙️ Miscellaneous Tasks
+
+- Bump version to 0.2.11
 
 ## [0.2.10] - 2025-09-13
 

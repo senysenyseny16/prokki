@@ -5,7 +5,7 @@ cabal-version: 2.2
 -- see: https://github.com/sol/hpack
 
 name:           prokki
-version:        0.2.11
+version:        0.2.12
 description:    Please see the README on GitHub at <https://github.com/senysenyseny16/prokki#readme>
 homepage:       https://github.com/senysenyseny16/prokki#readme
 bug-reports:    https://github.com/senysenyseny16/prokki/issues
