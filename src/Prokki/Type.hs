@@ -1,4 +1,14 @@
-module Prokki.Type (Address (..), Cache (..), Index (..), Indexes, RequestCounters, Path, PackageLinkType (..)) where
+module Prokki.Type
+  ( Address (..),
+    Cache (..),
+    Index (..),
+    Indexes,
+    RequestCounters,
+    Path,
+    PackageLinkType (..),
+    ResponseTimeout (..),
+  )
+where
 
 import qualified Data.Map as M
 import qualified Data.Text as T
@@ -16,6 +26,8 @@ newtype Cache = Cache {cacheDir :: FilePath}
 data PackageLinkType = Relative | Absolute
 
 type Path = [T.Text]
+
+newtype ResponseTimeout = ResponseTimeout {unResponseTimeout :: Int}
 
 instance Show Address where
   show (Address h p) = T.unpack h ++ ":" ++ show p

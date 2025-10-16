@@ -16,7 +16,8 @@ import qualified Data.Text as T
 import qualified Network.HTTP.Conduit as C
 import Network.HTTP.Types (status200, status504)
 import Network.Wai (Response, responseFile, responseLBS, responseStream)
-import Prokki.Type (Cache (..))
+import Prokki.Env (WithResponseTimeout, grab)
+import Prokki.Type (Cache (..), ResponseTimeout (unResponseTimeout))
 import Prokki.Utils (tempExt)
 import System.Directory (createDirectoryIfMissing, doesFileExist, removeFile, renameFile)
 import System.FilePath (takeDirectory, (</>))
@@ -24,15 +25,17 @@ import System.IO (Handle, IOMode (WriteMode), hClose, openBinaryFile)
 import Prelude hiding (log)
 
 respondUsingCache ::
-  (MonadCatch m, MonadResource m, MonadUnliftIO m, WithLog env Message m) =>
+  (MonadCatch m, MonadResource m, MonadUnliftIO m, WithLog env Message m, WithResponseTimeout env m) =>
   Cache ->
   C.Manager ->
   T.Text ->
   FilePath ->
   m Response
 respondUsingCache Cache {..} manager url path = do
+  responseTimeout' <- grab @ResponseTimeout
   let packagePath = cacheDir </> T.unpack (T.pack path)
       tempPackagePath = packagePath <> tempExt
+      responseTimeout = unResponseTimeout responseTimeout'
 
   isPackageCached <- liftIO $ doesFileExist packagePath
   isTempFileExists <- liftIO $ doesFileExist tempPackagePath
@@ -42,9 +45,10 @@ respondUsingCache Cache {..} manager url path = do
       pure $ responseFile status200 [] packagePath Nothing
     else do
       request <- C.parseRequest (T.unpack url)
+      let request' = request {C.responseTimeout = C.responseTimeoutMicro responseTimeout}
       catch
         do
-          response <- C.http request manager
+          response <- C.http request' manager
           let status = C.responseStatus response
               headers = C.responseHeaders response
               body = C.responseBody response

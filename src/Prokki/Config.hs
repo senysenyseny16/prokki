@@ -12,7 +12,8 @@ data Config = Config
   { address :: !Address,
     cache :: !Cache,
     indexes :: !Indexes,
-    logSeverity :: !Severity
+    logSeverity :: !Severity,
+    responseTimeout :: !Int
   }
 
 loadConfig :: (MonadIO m) => FilePath -> m Config
@@ -25,6 +26,7 @@ configCodec =
     <*> cacheCodec .= cache
     <*> Toml.map (Toml.text "name") indexCodec "index" .= indexes
     <*> Toml.read "log.severity" .= logSeverity
+    <*> Toml.int "responseTimeout" .= responseTimeout
 
 addressCodec :: Toml.TomlCodec Address
 addressCodec =

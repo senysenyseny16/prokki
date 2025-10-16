@@ -16,6 +16,7 @@ module Prokki.Env
     WithSettings,
     WithRequestCounters,
     WithStartTime,
+    WithResponseTimeout,
   )
 where
 
@@ -24,7 +25,7 @@ import Control.Concurrent.STM (TVar)
 import Control.Monad.Reader (MonadReader, asks)
 import Data.Time.Clock (UTCTime)
 import Network.HTTP.Conduit (Manager)
-import Prokki.Type (Address, Cache, Indexes, RequestCounters)
+import Prokki.Type (Address, Cache, Indexes, RequestCounters, ResponseTimeout)
 
 data Env m = Env
   { envAddress :: !Address,
@@ -33,7 +34,8 @@ data Env m = Env
     envManager :: !Manager,
     envLogAction :: !(LogAction m Message),
     envRequestCounters :: TVar RequestCounters,
-    envStartTime :: UTCTime
+    envStartTime :: UTCTime,
+    envResponseTimeout :: !ResponseTimeout
   }
 
 instance HasLog (Env m) Message m where
@@ -60,6 +62,8 @@ instance Has (TVar RequestCounters) (Env m) where obtain = envRequestCounters
 
 instance Has UTCTime (Env m) where obtain = envStartTime
 
+instance Has ResponseTimeout (Env m) where obtain = envResponseTimeout
+
 type WithAddress r m = (MonadReader r m, Has Address r)
 
 type WithIndexes r m = (MonadReader r m, Has Indexes r)
@@ -73,6 +77,8 @@ type WithSettings r m = (WithAddress r m, WithIndexes r m, WithCache r m)
 type WithRequestCounters r m = (MonadReader r m, Has (TVar RequestCounters) r)
 
 type WithStartTime r m = (MonadReader r m, Has UTCTime r)
+
+type WithResponseTimeout r m = (MonadReader r m, Has ResponseTimeout r)
 
 grab :: forall field env m. (MonadReader env m, Has field env) => m field
 grab = asks $ obtain @field
