@@ -19,6 +19,8 @@ cache = "index-cache"
 
 log.severity = "Info"
 
+responseTimeout = 25
+
 [[index]]
 name = "pypi"
 url = "https://pypi.org/simple"

@@ -16,7 +16,7 @@ import Prokki.Env
 import Prokki.Middleware.RequestLogger (logRequests)
 import Prokki.Monad (ProkkiEnv)
 import Prokki.Prokki (prokkiApp)
-import Prokki.Type (Address (..), Cache (..))
+import Prokki.Type (Address (..), Cache (..), ResponseTimeout (..))
 import Prokki.Utils (cleanTempFiles, countFiles, noCompressionTlsManagerSettings, prokkiVersion)
 import System.IO (BufferMode (..), hSetBuffering, stdout)
 import Prelude hiding (log)
@@ -35,6 +35,7 @@ runProkki Args {..} = do
       cachedPkgs <- liftIO $ countFiles (cacheDir cache)
       log I $ "Total packages in cache: " <> T.pack (show cachedPkgs)
       log I $ "Log severity: " <> T.pack (show logSeverity)
+      log I $ "Response timeout: " <> T.pack (show responseTimeout)
 
     cmanager <- C.newManager noCompressionTlsManagerSettings
     requestCounters <- newTVarIO SM.empty
@@ -49,7 +50,8 @@ runProkki Args {..} = do
               envManager = cmanager,
               envLogAction = hoistLogAction liftIO mainLogAction,
               envRequestCounters = requestCounters,
-              envStartTime = startTime
+              envStartTime = startTime,
+              envResponseTimeout = ResponseTimeout {unResponseTimeout = responseTimeout * 1000000}
             }
 
     run (port address) $ logRequests mainLogAction (prokkiApp prokkiEnv)
