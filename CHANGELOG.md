@@ -2,11 +2,21 @@
 
 All notable changes to this project will be documented in this file.
 
+## [0.2.13] - 2025-10-21
+
+### 🚀 Features
+
+- Client IP middleware logging
+
 ## [0.2.12] - 2025-10-16
 
 ### 🚀 Features
 
 - Response timeout
+
+### ⚙️ Miscellaneous Tasks
+
+- Bump version to 0.2.12
 
 ## [0.2.11] - 2025-09-17
 
