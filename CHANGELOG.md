@@ -2,11 +2,21 @@
 
 All notable changes to this project will be documented in this file.
 
+## [0.2.14] - 2025-10-27
+
+### 🚀 Features
+
+- Logo on main page (dino-emoji)
+
 ## [0.2.13] - 2025-10-21
 
 ### 🚀 Features
 
 - Client IP middleware logging
+
+### ⚙️ Miscellaneous Tasks
+
+- Bump version to 0.2.12
 
 ## [0.2.12] - 2025-10-16
 
