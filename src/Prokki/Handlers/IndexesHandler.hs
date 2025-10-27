@@ -31,9 +31,10 @@ indexesHandler req = do
 indexesPage :: T.Text -> Indexes -> RequestCounters -> NominalDiffTime -> H.Html
 indexesPage addr indexes requestCounters uptime = H.docTypeHtml $ do
   H.head $ do
+    H.meta H.! A.charset "UTF-8"
     H.title "Prokki Indexes"
   H.body $ do
-    H.h1 "Proxied Indexes"
+    H.h1 ("Proxied Indexes" <> H.toHtml ("\x1F996" :: String))
     H.table H.! A.border "1" $ do
       H.tr $ do
         H.th "Index"
