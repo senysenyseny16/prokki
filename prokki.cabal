@@ -1,11 +1,11 @@
 cabal-version: 2.2
 
--- This file has been generated from package.yaml by hpack version 0.38.0.
+-- This file has been generated from package.yaml by hpack version 0.38.1.
 --
 -- see: https://github.com/sol/hpack
 
 name:           prokki
-version:        0.2.14
+version:        0.2.15
 description:    Please see the README on GitHub at <https://github.com/senysenyseny16/prokki#readme>
 homepage:       https://github.com/senysenyseny16/prokki#readme
 bug-reports:    https://github.com/senysenyseny16/prokki/issues
