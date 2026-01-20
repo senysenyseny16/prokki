@@ -14,7 +14,8 @@ import Data.Text.Encoding (decodeUtf8, encodeUtf8)
 import Data.Void (Void)
 import Network.HTTP.Conduit (Manager)
 import qualified Network.HTTP.Conduit as C
-import Network.HTTP.Types (hContentLength, status504)
+import Network.HTTP.Types (status504)
+import Network.HTTP.Types.Header (hContentLength, hTransferEncoding)
 import Network.Wai (Request, Response, responseLBS)
 import Prokki.Env (WithManager, WithResponseTimeout, grab)
 import Prokki.Type (Index (..), PackageLinkType (..), Path, ResponseTimeout (unResponseTimeout))
@@ -50,7 +51,7 @@ indexHandler req Index {..} reqPath = do
       let headers = C.responseHeaders response
           newBody = replacePackageLink (C.responseBody response) addr index
           bodyLength = LBS.length newBody
-          newHeaders = (hContentLength, BS.pack $ show bodyLength) : filter (\(h, _) -> h /= hContentLength) headers
+          newHeaders = (hContentLength, BS.pack $ show bodyLength) : filter (\(h, _) -> h /= hContentLength && h /= hTransferEncoding) headers
 
       pure $ responseLBS (C.responseStatus response) newHeaders newBody
     ( \(e :: E.SomeException) -> do
