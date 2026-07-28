@@ -1,3 +1,8 @@
+## [0.3.0] - 2026-07-28
+
+### 🚀 Features
+
+- Ha, offline, s3/postgres, lru
 ## [0.2.15] - 2026-01-20
 
 ### 🐛 Bug Fixes
@@ -7,6 +12,7 @@
 ### ⚙️ Miscellaneous Tasks
 
 - Update nix channel to 25.11
+- Bump version to 0.2.15
 ## [0.2.14] - 2025-10-27
 
 ### 🚀 Features
