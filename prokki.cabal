@@ -1,6 +1,6 @@
 cabal-version: 2.2
 
--- This file has been generated from package.yaml by hpack version 0.38.1.
+-- This file has been generated from package.yaml by hpack version 0.39.1.
 --
 -- see: https://github.com/sol/hpack
 
@@ -26,19 +26,34 @@ source-repository head
 
 library
   exposed-modules:
-      Prokki.Cache
+      Prokki.App
       Prokki.Config
+      Prokki.Domain
       Prokki.Env
       Prokki.Handlers.ErrorHandler
       Prokki.Handlers.FaviconHandler
       Prokki.Handlers.IndexesHandler
-      Prokki.Handlers.IndexHandler
+      Prokki.Handlers.IndexRootHandler
       Prokki.Handlers.PackageHandler
+      Prokki.Handlers.ProjectHandler
       Prokki.Middleware.RequestLogger
       Prokki.Monad
-      Prokki.Prokki
       Prokki.RequestDispatcher
-      Prokki.Type
+      Prokki.SimpleIndex.Parser
+      Prokki.SimpleIndex.Render
+      Prokki.SimpleIndex.Types
+      Prokki.SimpleIndex.Utils
+      Prokki.Storage.Postgres
+      Prokki.Storage.Postgres.Types
+      Prokki.Storage.S3
+      Prokki.Storage.S3.Stream
+      Prokki.Storage.S3.Types
+      Prokki.Types.CacheEntry
+      Prokki.Types.Config
+      Prokki.Types.Domain
+      Prokki.Types.Network
+      Prokki.Types.PackageEntry
+      Prokki.Types.PackageRef
       Prokki.Utils
   other-modules:
       Paths_prokki
@@ -53,44 +68,49 @@ library
       PatternSynonyms
       TypeApplications
       FlexibleContexts
+      DuplicateRecordFields
   ghc-options: -Wall -Wcompat -Widentities -Wincomplete-record-updates -Wincomplete-uni-patterns -Wmissing-export-lists -Wmissing-home-modules -Wpartial-fields -Wredundant-constraints
   build-depends:
-      base >=4.7 && <5
+      amazonka
+    , amazonka-core
+    , amazonka-s3
+    , base >=4.7 && <5
     , blaze-html
     , bytestring
     , co-log
     , co-log-concurrent
     , conduit
-    , conduit-extra
     , containers
-    , directory
+    , crypton
     , exceptions
     , file-embed
-    , filemanip
-    , filepath
+    , html-conduit
     , http-conduit
     , http-types
     , human-readable-duration
-    , megaparsec
+    , microlens
     , mtl
     , network-uri
     , optparse-applicative
-    , replace-megaparsec
+    , postgresql-simple
+    , psqueues
+    , resource-pool
     , resourcet
     , stm
     , text
     , time
     , tomland
+    , transformers
     , unliftio-core
     , wai
     , wai-extra
     , warp
+    , xml-conduit
   default-language: Haskell2010
 
 executable prokki
   main-is: Main.hs
   other-modules:
-      Parser
       Paths_prokki
   autogen-modules:
       Paths_prokki
@@ -103,39 +123,45 @@ executable prokki
       PatternSynonyms
       TypeApplications
       FlexibleContexts
+      DuplicateRecordFields
   ghc-options: -Wall -Wcompat -Widentities -Wincomplete-record-updates -Wincomplete-uni-patterns -Wmissing-export-lists -Wmissing-home-modules -Wpartial-fields -Wredundant-constraints -threaded -rtsopts -with-rtsopts=-N
   build-depends:
-      base >=4.7 && <5
+      amazonka
+    , amazonka-core
+    , amazonka-s3
+    , base >=4.7 && <5
     , blaze-html
     , bytestring
     , co-log
     , co-log-concurrent
     , conduit
-    , conduit-extra
     , containers
-    , directory
+    , crypton
     , exceptions
     , file-embed
-    , filemanip
-    , filepath
+    , html-conduit
     , http-conduit
     , http-types
     , human-readable-duration
-    , megaparsec
+    , microlens
     , mtl
     , network-uri
     , optparse-applicative
+    , postgresql-simple
     , prokki
-    , replace-megaparsec
+    , psqueues
+    , resource-pool
     , resourcet
     , stm
     , text
     , time
     , tomland
+    , transformers
     , unliftio-core
     , wai
     , wai-extra
     , warp
+    , xml-conduit
   default-language: Haskell2010
 
 test-suite prokki-test
@@ -154,37 +180,44 @@ test-suite prokki-test
       PatternSynonyms
       TypeApplications
       FlexibleContexts
+      DuplicateRecordFields
   ghc-options: -Wall -Wcompat -Widentities -Wincomplete-record-updates -Wincomplete-uni-patterns -Wmissing-export-lists -Wmissing-home-modules -Wpartial-fields -Wredundant-constraints -threaded -rtsopts -with-rtsopts=-N
   build-depends:
-      base >=4.7 && <5
+      amazonka
+    , amazonka-core
+    , amazonka-s3
+    , base >=4.7 && <5
     , blaze-html
     , bytestring
     , co-log
     , co-log-concurrent
     , conduit
-    , conduit-extra
     , containers
-    , directory
+    , crypton
     , exceptions
     , file-embed
-    , filemanip
-    , filepath
+    , hspec
+    , html-conduit
     , http-conduit
     , http-types
     , human-readable-duration
-    , megaparsec
+    , microlens
     , mtl
     , network-uri
     , optparse-applicative
+    , postgresql-simple
     , prokki
-    , replace-megaparsec
+    , psqueues
+    , resource-pool
     , resourcet
     , stm
     , text
     , time
     , tomland
+    , transformers
     , unliftio-core
     , wai
     , wai-extra
     , warp
+    , xml-conduit
   default-language: Haskell2010

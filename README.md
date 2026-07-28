@@ -15,11 +15,26 @@ Create a configuration file, `config.toml` for example:
 host = "0.0.0.0"
 port = 8080
 
-cache = "index-cache"
+log.severity = "Warning"
 
-log.severity = "Info"
+project_cache_ttl = 1
+project_cache_max_size = 3000
+package_cache_max_size = 3000
 
-responseTimeout = 25
+responseTimeout = 30
+
+[http]
+base_url = "http://localhost:8080"
+
+[postgres]
+host = "localhost"
+port = 5432
+database = "prokki"
+
+[s3]
+host = "localhost"
+port = 9000
+bucket = "prokki"
 
 [[index]]
 name = "pypi"
@@ -30,30 +45,29 @@ name = "torch-cu118"
 url = "https://download.pytorch.org/whl/cu118"
 ```
 
-Create a volume for packages (you can also mount a folder instead):
+Apply migrations:
+
 ```bash
-docker volume create prokki-packages-cache
+PGUSER=? PGPASSWORD=? PGDATABASE=prokki PGHOST=? PGPORT=? sqitch deploy db:pg:prokki
 ```
 
 Start Prokki:
+
 ```bash
 docker run \
-    --detach \
-    --name prokki \
-    --publish 5000:8080 \
-    --volume prokki-packages-cache:/index-cache \
-    --volume $(pwd)/config.toml:/config.toml \
-    ghcr.io/senysenyseny16/prokki
-```
-
-By default it listens on port 8080 (in this example, it's mapped to port 5000).
-
-You can view available options using the following command:
-```bash
-docker run -it --rm ghcr.io/senysenyseny16/prokki --help
+	--detach \
+	--name prokki \
+	-e AWS_ACCESS_KEY_ID=? \
+	-e AWS_SECRET_ACCESS_KEY=? \
+	-e PGUSER=? \
+	-e PGPASSWORD=? \
+	--publish 8080:8080 \
+	--volume $(pwd)/config.toml:/config.toml \
+	ghcr.io/senysenyseny16/prokki
 ```
 
 Specify it as the index for your package manager; in this example, `uv` is used:
+
 ```bash
 uv pip install torch --index http://<host>:<port>/<index>
 ```

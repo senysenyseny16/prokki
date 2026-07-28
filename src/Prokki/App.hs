@@ -1,4 +1,4 @@
-module Prokki.Prokki (prokkiApp) where
+module Prokki.App (prokkiApp) where
 
 import Control.Monad.IO.Class (liftIO)
 import Network.Wai (Application)

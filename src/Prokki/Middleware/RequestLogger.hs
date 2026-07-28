@@ -1,7 +1,10 @@
+{-# LANGUAGE ScopedTypeVariables #-}
+
 module Prokki.Middleware.RequestLogger (logRequests) where
 
 import Colog (LogAction, Message, Msg (..), Severity (..), (<&))
 import Control.Applicative ((<|>))
+import Control.Exception (SomeException (..), throwIO, try)
 import Data.List (find)
 import Data.Maybe (fromMaybe)
 import qualified Data.Text as T
@@ -11,11 +14,17 @@ import Network.HTTP.Types (statusCode)
 import Network.Wai (Middleware, Request, Response, httpVersion, rawPathInfo, remoteHost, requestHeaders, requestMethod, responseStatus)
 
 logRequests :: (HasCallStack) => LogAction IO Message -> Middleware
-logRequests logAction app req respond = app req respond'
+logRequests logAction app req respond = do
+  result <- try $ app req respond'
+  case result of
+    Left (exc :: SomeException) -> do
+      logAction <& Msg {msgText = T.pack (show exc), msgSeverity = Error, msgStack = callStack}
+      throwIO exc
+    Right value -> pure value
   where
     respond' res = do
       let status = statusCode (responseStatus res)
-          severity = if status == 200 || status == 301 then Info else Warning
+          severity = if status == 200 || status == 301 || status == 302 then Info else Warning
       logAction <& (Msg {msgText = requestMsg req res, msgSeverity = severity, msgStack = callStack})
       respond res
 
@@ -31,8 +40,8 @@ requestMsg req res =
 getClientIp :: Request -> T.Text
 getClientIp req =
   let headers = requestHeaders req
-      forwardedFor = lookup "X-Forwarded-For" headers >>= (Just . decodeUtf8)
-      realIp = lookup "X-Real-IP" headers >>= (Just . decodeUtf8)
+      forwardedFor = decodeUtf8 <$> lookup "X-Forwarded-For" headers
+      realIp = decodeUtf8 <$> lookup "X-Real-IP" headers
       hostIp = stripPort $ T.pack $ show (remoteHost req)
    in fromMaybe hostIp $ (forwardedFor >>= getFirstIp) <|> realIp
 

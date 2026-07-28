@@ -1,9 +1,7 @@
-snapshot: lts-23.24
+snapshot: lts-22.44
 packages:
 - .
-notify-if-nix-on-path: false
 extra-deps:
-  - co-log-concurrent-0.5.1.0@sha256:1a4c36bb62a208af1da23b70c895259d401e3c58582ca3f88202a1e0e99bf59e,2824
-allow-newer: true
-allow-newer-deps:
-  - co-log-concurrent
+  - tomland-1.3.3.3@sha256:3ce1f694528a91219b240aa2798a6dc20c0bc5cec2bfed26e1b0b3d482fd1589,9404
+  - validation-selective-0.2.0.0@sha256:9168753264dc499cb9f6c393f81c89d85818c8b0301b6c20c2f5c0b47f8da079,3917
+notify-if-nix-on-path: false

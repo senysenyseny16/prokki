@@ -5,15 +5,22 @@
 
 packages:
 - completed:
-    hackage: co-log-concurrent-0.5.1.0@sha256:1a4c36bb62a208af1da23b70c895259d401e3c58582ca3f88202a1e0e99bf59e,2824
+    hackage: tomland-1.3.3.3@sha256:3ce1f694528a91219b240aa2798a6dc20c0bc5cec2bfed26e1b0b3d482fd1589,9404
     pantry-tree:
-      sha256: 14e3ad598b5c28f497c9ad027e99b4b1467de2bd900f4452c60587ed23f27126
-      size: 366
+      sha256: a2bfe186605037b01459d7a014a1aa28b719e290005db06d64685243a8086cce
+      size: 6430
   original:
-    hackage: co-log-concurrent-0.5.1.0@sha256:1a4c36bb62a208af1da23b70c895259d401e3c58582ca3f88202a1e0e99bf59e,2824
+    hackage: tomland-1.3.3.3@sha256:3ce1f694528a91219b240aa2798a6dc20c0bc5cec2bfed26e1b0b3d482fd1589,9404
+- completed:
+    hackage: validation-selective-0.2.0.0@sha256:9168753264dc499cb9f6c393f81c89d85818c8b0301b6c20c2f5c0b47f8da079,3917
+    pantry-tree:
+      sha256: ff57a31905b92ae118eead6ad69ff56f1dfa77f83acccb8f5d025e740d215c61
+      size: 697
+  original:
+    hackage: validation-selective-0.2.0.0@sha256:9168753264dc499cb9f6c393f81c89d85818c8b0301b6c20c2f5c0b47f8da079,3917
 snapshots:
 - completed:
-    sha256: 400dfb2174640dd2f9f2ba7cbf9148699f2380ab64faa46f4be298a5d6205316
-    size: 684057
-    url: https://raw.githubusercontent.com/commercialhaskell/stackage-snapshots/master/lts/23/24.yaml
-  original: lts-23.24
+    sha256: 238fa745b64f91184f9aa518fe04bdde6552533d169b0da5256670df83a0f1a9
+    size: 721141
+    url: https://raw.githubusercontent.com/commercialhaskell/stackage-snapshots/master/lts/22/44.yaml
+  original: lts-22.44

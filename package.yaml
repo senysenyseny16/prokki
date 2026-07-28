@@ -21,29 +21,34 @@ dependencies:
 - http-conduit
 - http-types
 - blaze-html
+- html-conduit
+- xml-conduit
 - network-uri
 - conduit
-- conduit-extra
+- postgresql-simple
+- resource-pool
+- amazonka
+- amazonka-core
+- amazonka-s3
+- microlens
 - resourcet
 - unliftio-core
 - stm
-- megaparsec
-- replace-megaparsec
 - mtl
+- transformers
 - exceptions
-- filepath
-- directory
 - bytestring
 - containers
+- psqueues
 - text
 - time
 - human-readable-duration
 - co-log
 - co-log-concurrent
 - tomland
-- filemanip
 - file-embed
 - optparse-applicative
+- crypton
 
 ghc-options:
 - -Wall
@@ -63,6 +68,7 @@ default-extensions:
   - PatternSynonyms
   - TypeApplications
   - FlexibleContexts
+  - DuplicateRecordFields
 
 library:
   source-dirs: src
@@ -87,4 +93,5 @@ tests:
     - -rtsopts
     - -with-rtsopts=-N
     dependencies:
+    - hspec
     - prokki

@@ -1,0 +1,8 @@
+%syntax-version=1.0.0
+%project=prokki
+
+init 2026-01-20T17:47:08Z seny <seny@aptom> # Initial schema
+packages 2026-01-20T17:48:21Z seny <seny@aptom> # Store packages metadata (upstream, name, sha, etc)
+index_fetches [init] 2026-07-07T17:10:19Z seny <seny@aptom> # Track last upstream fetch time per (index, project) for simple-page TTL
+package_metadata_columns [packages] 2026-07-09T14:35:23Z seny <seny@aptom> # Add requires_python and core_metadata columns to packages
+package_metadata_cache [packages] 2026-07-09T15:45:19Z seny <seny@aptom> # Add metadata sidecar cache columns (metadata_s3_key, metadata_size)
