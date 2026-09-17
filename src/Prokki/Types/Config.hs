@@ -40,7 +40,8 @@ data PGConfig = PGConfig
 data S3Config = S3Config
   { s3Host :: !T.Text,
     s3Port :: !Int,
-    s3Bucket :: !T.Text
+    s3Bucket :: !T.Text,
+    s3Secure :: !Bool
   }
 
 data Config = Config

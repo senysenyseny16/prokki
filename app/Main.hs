@@ -51,7 +51,7 @@ runApp Args {..} = do
     packageCache <- newTVarIO PSQ.empty
     startTime <- getCurrentTime
     pgPool <- mkPgPool pg
-    s3Env <- mkS3Env (s3Host s3) (s3Port s3) (s3Bucket s3)
+    s3Env <- mkS3Env (s3Host s3) (s3Port s3) (s3Bucket s3) (s3Secure s3)
     let mainLogAction = filterBySeverity logSeverity msgSeverity logAction
         prokkiEnv :: ProkkiEnv
         prokkiEnv =
@@ -95,5 +95,5 @@ renderPGConfig (PGConfig host port db) =
   "Postgres host: " <> host <> ", port: " <> T.pack (show port) <> ", db: " <> db
 
 renderS3Config :: S3Config -> T.Text
-renderS3Config (S3Config host port bucket) =
-  "S3 host: " <> host <> ", port: " <> T.pack (show port) <> ", bucket: " <> bucket
+renderS3Config (S3Config host port bucket secure) =
+  "S3 host: " <> host <> ", port: " <> T.pack (show port) <> ", bucket: " <> bucket <> ", secure: " <> T.pack (show secure)

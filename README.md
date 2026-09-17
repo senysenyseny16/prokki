@@ -17,11 +17,11 @@ port = 8080
 
 log.severity = "Warning"
 
-project_cache_ttl = 1
+project_cache_ttl = 1440  # minutes
 project_cache_max_size = 3000
 package_cache_max_size = 3000
 
-responseTimeout = 30
+response_timeout = 30
 
 [http]
 base_url = "http://localhost:8080"
@@ -35,6 +35,7 @@ database = "prokki"
 host = "localhost"
 port = 9000
 bucket = "prokki"
+secure = false
 
 [[index]]
 name = "pypi"

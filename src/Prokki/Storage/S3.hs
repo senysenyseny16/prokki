@@ -14,12 +14,11 @@ import Lens.Micro ((&), (?~))
 import Prokki.Env (WithS3, grab)
 import Prokki.Storage.S3.Types (S3Env (..))
 
-mkS3Env :: T.Text -> Int -> T.Text -> IO S3Env
-mkS3Env host port bucket = do
+mkS3Env :: T.Text -> Int -> T.Text -> Bool -> IO S3Env
+mkS3Env host port bucket secure = do
   env <- AWS.newEnv AWS.discover
 
-  let secure = False
-      overrideS3 svc =
+  let overrideS3 svc =
         let svc' = AWS.setEndpoint secure (encodeUtf8 host) port svc
          in svc' {AWS.s3AddressingStyle = AWS.S3AddressingStylePath}
       env' = AWS.overrideService overrideS3 env

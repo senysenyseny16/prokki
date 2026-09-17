@@ -55,6 +55,7 @@ s3ConfigCodec =
     <$> Toml.text "host" .= s3Host
     <*> Toml.int "port" .= s3Port
     <*> Toml.text "bucket" .= s3Bucket
+    <*> Toml.bool "secure" .= s3Secure
 
 prokkiBaseUrlCodec :: Toml.TomlCodec ProkkiBaseUrl
 prokkiBaseUrlCodec = Toml.dimatch toText parseProkkiBaseUrl (Toml.text "base_url")
