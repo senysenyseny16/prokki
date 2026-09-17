@@ -9,6 +9,7 @@ import Data.Char (isHexDigit)
 import qualified Data.Map as M
 import qualified Data.OrdPSQ as PSQ
 import qualified Data.Text as T
+import Data.Time.Clock (getCurrentTime)
 import Network.HTTP.Types (status302)
 import Network.Wai (Request, Response, responseLBS)
 import Prokki.Domain (packageCache, packageKeyS3, packageUpstream)
@@ -67,7 +68,9 @@ packageHandler req Index {..} reqPath = do
             let updEntry = case kind of
                   Package -> entry {ceS3Key = Just keyS3}
                   Metadata -> entry {ceMetadataS3Key = Just keyS3}
-            withSingleUpload keyS3 $ do
+            startedAt <- liftIO getCurrentTime
+            let info = UploadInfo (pkgIndexName pkg) (pkgFilename pkg) startedAt
+            withSingleUpload keyS3 info $ do
               storePackage indexName entry (pkgUrlToken pkg) kind
               cacheEntry updEntry
             redirectToS3 keyS3 (pkgFilename pkg)
@@ -103,16 +106,16 @@ storePackage idx entry token kind = do
   len <- streamPackageToS3 upstreamUrl keyS3
   markPackageCachedPg idx token keyS3 kind len
 
-withSingleUpload :: (MonadIO m, MonadMask m, WithUploadRegistry env m) => T.Text -> m () -> m ()
-withSingleUpload key action = do
+withSingleUpload :: (MonadIO m, MonadMask m, WithUploadRegistry env m) => T.Text -> UploadInfo -> m () -> m ()
+withSingleUpload key info action = do
   registry <- grab @(TVar UploadRegistry)
   decision <- liftIO $ atomically $ do
     m <- readTVar registry
     case M.lookup key m of
-      Just tmvar -> pure (Right tmvar)
+      Just (_, tmvar) -> pure (Right tmvar)
       Nothing -> do
         tmvar <- newEmptyTMVar
-        writeTVar registry (M.insert key tmvar m)
+        writeTVar registry (M.insert key (info, tmvar) m)
         pure (Left tmvar)
   case decision of
     Right tmvar ->

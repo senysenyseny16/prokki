@@ -3,6 +3,7 @@ module Prokki.Types.Domain
     Index (..),
     Indexes,
     RequestCounters,
+    UploadInfo (..),
     UploadRegistry,
     ProjectCache,
     PackageCache,
@@ -35,7 +36,13 @@ type Indexes = M.Map IndexName Index
 
 type RequestCounters = M.Map T.Text Int
 
-type UploadRegistry = M.Map T.Text (TMVar ())
+data UploadInfo = UploadInfo
+  { uiIndexName :: IndexName,
+    uiFilename :: T.Text,
+    uiStartedAt :: UTCTime
+  }
+
+type UploadRegistry = M.Map T.Text (UploadInfo, TMVar ())
 
 type ProjectCache = PSQ.OrdPSQ (IndexName, T.Text) Int (UTCTime, TL.Text)
 

@@ -3,16 +3,17 @@ module Prokki.Handlers.IndexesHandler (indexesHandler) where
 import Control.Concurrent.STM (TVar, readTVarIO)
 import Control.Monad.IO.Class (MonadIO (liftIO))
 import Data.Duration (humanReadableDuration)
+import Data.List (sortOn)
 import qualified Data.Map.Strict as Map
 import qualified Data.OrdPSQ as PSQ
 import qualified Data.Text as T
 import Data.Time.Clock (NominalDiffTime, UTCTime, diffUTCTime, getCurrentTime)
 import Network.HTTP.Types (status200)
 import Network.Wai (Request, Response, responseLBS)
-import Prokki.Env (WithIndexes, WithPGConnectionPool, WithPackageCache, WithPackageCacheMaxSize, WithProjectCache, WithProjectCacheMaxSize, WithProkkiBaseUrl, WithRequestCounters, WithStartTime, grab)
+import Prokki.Env (WithIndexes, WithPGConnectionPool, WithPackageCache, WithPackageCacheMaxSize, WithProjectCache, WithProjectCacheMaxSize, WithProkkiBaseUrl, WithRequestCounters, WithStartTime, WithUploadRegistry, grab)
 import Prokki.Storage.Postgres (cachedByIndexPg)
 import Prokki.Types.Config (PackageCacheMaxSize (..), ProjectCacheMaxSize (..), ProkkiBaseUrl (..))
-import Prokki.Types.Domain (Index (..), IndexName (..), Indexes, PackageCache, ProjectCache, RequestCounters)
+import Prokki.Types.Domain (Index (..), IndexName (..), Indexes, PackageCache, ProjectCache, RequestCounters, UploadInfo (..), UploadRegistry)
 import Prokki.Utils (uriToText)
 import Text.Blaze.Html.Renderer.Utf8 (renderHtml)
 import qualified Text.Blaze.Html5 as H
@@ -29,7 +30,8 @@ indexesHandler ::
     WithProjectCache env m,
     WithProjectCacheMaxSize env m,
     WithPackageCache env m,
-    WithPackageCacheMaxSize env m
+    WithPackageCacheMaxSize env m,
+    WithUploadRegistry env m
   ) =>
   Request ->
   m Response
@@ -42,17 +44,19 @@ indexesHandler _ = do
   nowTime <- liftIO getCurrentTime
   projectCache <- grab @(TVar ProjectCache) >>= liftIO . readTVarIO
   packageCache <- grab @(TVar PackageCache) >>= liftIO . readTVarIO
+  uploadRegistry <- grab @(TVar UploadRegistry) >>= liftIO . readTVarIO
   ProjectCacheMaxSize projectCacheMaxSize <- grab @ProjectCacheMaxSize
   PackageCacheMaxSize packageCacheMaxSize <- grab @PackageCacheMaxSize
   let addr = uriToText (unProkkiBaseUrl baseUrl)
       uptime = diffUTCTime nowTime startTime
       projectCacheSize = PSQ.size projectCache
       packageCacheSize = PSQ.size packageCache
-      htmlPage = renderHtml $ indexesPage addr indexes requestCounters uptime indexesStat projectCacheSize projectCacheMaxSize packageCacheSize packageCacheMaxSize
+      inProgress = sortOn uiStartedAt (map fst (Map.elems uploadRegistry))
+      htmlPage = renderHtml $ indexesPage addr indexes requestCounters uptime indexesStat projectCacheSize projectCacheMaxSize packageCacheSize packageCacheMaxSize nowTime inProgress
   pure $ responseLBS status200 [("Content-Type", "text/html")] htmlPage
 
-indexesPage :: T.Text -> Indexes -> RequestCounters -> NominalDiffTime -> Map.Map IndexName Int -> Int -> Int -> Int -> Int -> H.Html
-indexesPage addr indexes requestCounters uptime indexesStat projectCacheSize projectCacheMaxSize packageCacheSize packageCacheMaxSize = H.docTypeHtml $ do
+indexesPage :: T.Text -> Indexes -> RequestCounters -> NominalDiffTime -> Map.Map IndexName Int -> Int -> Int -> Int -> Int -> UTCTime -> [UploadInfo] -> H.Html
+indexesPage addr indexes requestCounters uptime indexesStat projectCacheSize projectCacheMaxSize packageCacheSize packageCacheMaxSize nowTime inProgress = H.docTypeHtml $ do
   H.head $ do
     H.meta H.! A.charset "UTF-8"
     H.title "Prokki Indexes"
@@ -65,6 +69,16 @@ indexesPage addr indexes requestCounters uptime indexesStat projectCacheSize pro
         H.th "Origin"
         H.th "Packages"
       mapM_ renderIndex indexes
+
+    H.h1 "Caching Now"
+    if null inProgress
+      then H.p "Nothing is being cached right now."
+      else H.table H.! A.style "border: 1px solid" $ do
+        H.tr $ do
+          H.th "Index"
+          H.th "Filename"
+          H.th "Duration"
+        mapM_ renderUpload inProgress
 
     H.h1 "Statistics"
     H.p $ H.toHtml ("Uptime: " <> humanReadableDuration (realToFrac uptime))
@@ -92,3 +106,8 @@ indexesPage addr indexes requestCounters uptime indexesStat projectCacheSize pro
     renderStats (index, counter) = H.tr $ do
       H.td $ H.toHtml index
       H.td $ H.toHtml counter
+    renderUpload :: UploadInfo -> H.Html
+    renderUpload UploadInfo {..} = H.tr $ do
+      H.td $ H.toHtml (unIndexName uiIndexName)
+      H.td $ H.toHtml uiFilename
+      H.td $ H.toHtml (humanReadableDuration (realToFrac (diffUTCTime nowTime uiStartedAt)))
