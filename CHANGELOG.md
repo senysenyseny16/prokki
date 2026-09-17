@@ -1,8 +1,23 @@
+## [0.3.1] - 2026-09-17
+
+### 🚀 Features
+
+- Secure flag (config) for s3
+- Secure flag (config) for postgres
+- Caching now section on indexes page
+
+### 🐛 Bug Fixes
+
+- Headers for strict S3-compatible servers (ceph RGW)
 ## [0.3.0] - 2026-07-28
 
 ### 🚀 Features
 
 - Ha, offline, s3/postgres, lru
+
+### ⚙️ Miscellaneous Tasks
+
+- Bump version 0.3.0
 ## [0.2.15] - 2026-01-20
 
 ### 🐛 Bug Fixes
