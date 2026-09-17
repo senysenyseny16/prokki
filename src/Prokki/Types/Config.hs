@@ -34,7 +34,8 @@ newtype ProjectCacheTtl = ProjectCacheTtl NominalDiffTime
 data PGConfig = PGConfig
   { pgHost :: !T.Text,
     pgPort :: !Int,
-    pgDatabase :: !T.Text
+    pgDatabase :: !T.Text,
+    pgSecure :: !Bool
   }
 
 data S3Config = S3Config

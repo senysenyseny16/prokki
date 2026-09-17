@@ -93,8 +93,8 @@ renderIndex :: Index -> T.Text
 renderIndex (Index name origin path) = "Index: " <> unIndexName name <> " -> " <> origin <> path
 
 renderPGConfig :: PGConfig -> T.Text
-renderPGConfig (PGConfig host port db) =
-  "Postgres host: " <> host <> ", port: " <> T.pack (show port) <> ", db: " <> db
+renderPGConfig (PGConfig host port db secure) =
+  "Postgres host: " <> host <> ", port: " <> T.pack (show port) <> ", db: " <> db <> ", secure: " <> T.pack (show secure)
 
 renderS3Config :: S3Config -> T.Text
 renderS3Config (S3Config host port bucket secure) =

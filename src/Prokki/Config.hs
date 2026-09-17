@@ -48,6 +48,7 @@ pgConfigCodec =
     <$> Toml.text "host" .= pgHost
     <*> Toml.int "port" .= pgPort
     <*> Toml.text "database" .= pgDatabase
+    <*> Toml.bool "secure" .= pgSecure
 
 s3ConfigCodec :: Toml.TomlCodec S3Config
 s3ConfigCodec =

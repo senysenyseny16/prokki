@@ -30,6 +30,7 @@ base_url = "http://localhost:8080"
 host = "localhost"
 port = 5432
 database = "prokki"
+secure = false
 
 [s3]
 host = "localhost"

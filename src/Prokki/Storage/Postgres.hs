@@ -15,6 +15,7 @@ where
 
 import Control.Monad (void)
 import Control.Monad.IO.Class (MonadIO, liftIO)
+import Data.ByteString (ByteString)
 import Data.Int (Int64)
 import qualified Data.Map.Strict as Map
 import Data.Maybe (listToMaybe)
@@ -47,9 +48,13 @@ mkConnectInfo cfg = do
 mkPgPool :: PGConfig -> IO PGConnectionPool
 mkPgPool cfg = do
   connInfo <- mkConnectInfo cfg
-  pool <- newPool (defaultPoolConfig (PG.connect connInfo) PG.close 60 20)
+  let connStr = PG.postgreSQLConnectionString connInfo <> sslModeParam (pgSecure cfg)
+  pool <- newPool (defaultPoolConfig (PG.connectPostgreSQL connStr) PG.close 60 20)
   void $ withResource pool $ \conn -> PG.query_ conn "SELECT 1" :: IO [PG.Only Int] -- test connection
   pure (PGConnectionPool pool)
+
+sslModeParam :: Bool -> ByteString
+sslModeParam secure = " sslmode=" <> if secure then "require" else "disable"
 
 runPg :: (MonadIO m, WithPGConnectionPool env m) => (PG.Connection -> IO a) -> m a
 runPg action = do
