@@ -20,6 +20,7 @@ dependencies:
 - warp
 - http-conduit
 - http-types
+- http-client
 - blaze-html
 - html-conduit
 - xml-conduit

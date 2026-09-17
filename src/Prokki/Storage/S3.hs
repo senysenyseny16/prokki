@@ -11,17 +11,18 @@ import qualified Data.Text as T
 import Data.Text.Encoding (encodeUtf8)
 import Data.Time.Clock (getCurrentTime)
 import Lens.Micro ((&), (?~))
+import qualified Network.HTTP.Conduit as HC
 import Prokki.Env (WithS3, grab)
 import Prokki.Storage.S3.Types (S3Env (..))
 
-mkS3Env :: T.Text -> Int -> T.Text -> Bool -> IO S3Env
-mkS3Env host port bucket secure = do
+mkS3Env :: HC.Manager -> T.Text -> Int -> T.Text -> Bool -> IO S3Env
+mkS3Env manager host port bucket secure = do
   env <- AWS.newEnv AWS.discover
 
   let overrideS3 svc =
         let svc' = AWS.setEndpoint secure (encodeUtf8 host) port svc
          in svc' {AWS.s3AddressingStyle = AWS.S3AddressingStylePath}
-      env' = AWS.overrideService overrideS3 env
+      env' = (AWS.overrideService overrideS3 env) {AWS.manager = manager}
 
   pure $ S3Env env' bucket
 

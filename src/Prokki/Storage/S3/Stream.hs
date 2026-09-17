@@ -6,11 +6,14 @@ import Control.Exception (throwIO)
 import Control.Monad.IO.Unlift (MonadIO (liftIO))
 import Control.Monad.Trans.Resource (runResourceT)
 import qualified Data.ByteString.Char8 as BS8
+import Data.Conduit ((.|))
+import qualified Data.Conduit.Combinators as CC
 import Data.Int (Int64)
 import qualified Data.Text as T
 import qualified Network.HTTP.Conduit as HC
 import Network.HTTP.Simple (ResponseHeaders)
 import Network.HTTP.Types.Header (hContentLength)
+import Network.HTTP.Types.Status (Status, statusIsSuccessful)
 import Prokki.Env (WithManager, WithS3, grab)
 import Prokki.Storage.S3 (runS3)
 import Prokki.Storage.S3.Types
@@ -28,8 +31,9 @@ streamPackageToS3 url keyS3 = do
     req <- withoutCompression <$> HC.parseRequest (T.unpack url)
     runResourceT $ do
       resp <- HC.http req manager
+      requireSuccessStatus (HC.responseStatus resp)
       len <- requireContentLength (HC.responseHeaders resp)
-      let src = HC.responseBody resp
+      let src = HC.responseBody resp .| CC.chunksOfE (fromIntegral AWS.defaultChunkSize)
           chunked = AWS.ChunkedBody AWS.defaultChunkSize len src
           putReq =
             S3.newPutObject
@@ -38,6 +42,11 @@ streamPackageToS3 url keyS3 = do
               (AWS.Chunked chunked)
       _ <- AWS.send awsEnv putReq
       pure (fromIntegral len :: Int64)
+
+requireSuccessStatus :: (MonadIO m) => Status -> m ()
+requireSuccessStatus status
+  | statusIsSuccessful status = pure ()
+  | otherwise = liftIO (throwIO (UnexpectedUpstreamStatus status))
 
 requireContentLength :: (MonadIO m) => ResponseHeaders -> m Integer
 requireContentLength hdrs =

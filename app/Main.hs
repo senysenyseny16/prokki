@@ -7,6 +7,7 @@ import qualified Data.OrdPSQ as PSQ
 import qualified Data.Text as T
 import Data.Time.Clock (getCurrentTime)
 import GHC.Stack (HasCallStack)
+import Network.HTTP.Client (managerModifyRequest)
 import qualified Network.HTTP.Conduit as C
 import Network.URI (uriToString)
 import Network.Wai.Handler.Warp (run)
@@ -19,6 +20,7 @@ import Prokki.Middleware.RequestLogger (logRequests)
 import Prokki.Monad (ProkkiEnv)
 import Prokki.Storage.Postgres (mkPgPool)
 import Prokki.Storage.S3 (mkS3Env)
+import Prokki.Storage.S3.Http (unchunk)
 import Prokki.Types.Config (Config (..), PGConfig (..), ProjectCacheTtl (..), ProkkiBaseUrl (..), ResponseTimeout (..), S3Config (..))
 import Prokki.Types.Domain (Index (..), IndexName (..))
 import Prokki.Types.Network (Address (..))
@@ -44,14 +46,14 @@ runApp Args {..} = do
       log I $ renderPGConfig pg
       log I $ renderS3Config s3
 
-    cmanager <- C.newManager C.tlsManagerSettings
+    cmanager <- C.newManager C.tlsManagerSettings {managerModifyRequest = pure . unchunk}
     requestCounters <- newTVarIO M.empty
     uploadRegistry <- newTVarIO M.empty
     projectCache <- newTVarIO PSQ.empty
     packageCache <- newTVarIO PSQ.empty
     startTime <- getCurrentTime
     pgPool <- mkPgPool pg
-    s3Env <- mkS3Env (s3Host s3) (s3Port s3) (s3Bucket s3) (s3Secure s3)
+    s3Env <- mkS3Env cmanager (s3Host s3) (s3Port s3) (s3Bucket s3) (s3Secure s3)
     let mainLogAction = filterBySeverity logSeverity msgSeverity logAction
         prokkiEnv :: ProkkiEnv
         prokkiEnv =

@@ -46,6 +46,7 @@ library
       Prokki.Storage.Postgres
       Prokki.Storage.Postgres.Types
       Prokki.Storage.S3
+      Prokki.Storage.S3.Http
       Prokki.Storage.S3.Stream
       Prokki.Storage.S3.Types
       Prokki.Types.CacheEntry
@@ -85,6 +86,7 @@ library
     , exceptions
     , file-embed
     , html-conduit
+    , http-client
     , http-conduit
     , http-types
     , human-readable-duration
@@ -140,6 +142,7 @@ executable prokki
     , exceptions
     , file-embed
     , html-conduit
+    , http-client
     , http-conduit
     , http-types
     , human-readable-duration
@@ -198,6 +201,7 @@ test-suite prokki-test
     , file-embed
     , hspec
     , html-conduit
+    , http-client
     , http-conduit
     , http-types
     , human-readable-duration
