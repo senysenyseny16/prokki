@@ -1,4 +1,4 @@
-module Prokki.Storage.S3 (mkS3Env, runS3, presignObjectS3, putObjectS3) where
+module Prokki.Storage.S3 (mkS3Env, runS3, checkConnS3, presignObjectS3, putObjectS3) where
 
 import qualified Amazonka as AWS
 import qualified Amazonka.S3 as S3
@@ -24,12 +24,17 @@ mkS3Env manager host port bucket secure = do
          in svc' {AWS.s3AddressingStyle = AWS.S3AddressingStylePath}
       env' = (AWS.overrideService overrideS3 env) {AWS.manager = manager}
 
+  runResourceT $ void (AWS.send env' (S3.newHeadBucket (S3.BucketName bucket))) -- check connection
   pure $ S3Env env' bucket
 
 runS3 :: (MonadIO m, WithS3 env m) => (AWS.Env -> T.Text -> IO a) -> m a
 runS3 action = do
   s3 <- grab @S3Env
   liftIO $ action (s3AwsEnv s3) (s3Bucket s3)
+
+checkConnS3 :: (MonadIO m, WithS3 env m) => m ()
+checkConnS3 = runS3 $ \awsEnv bucket ->
+  runResourceT $ void (AWS.send awsEnv (S3.newHeadBucket (S3.BucketName bucket)))
 
 presignObjectS3 :: (MonadIO m, WithS3 env m) => T.Text -> T.Text -> m ByteString
 presignObjectS3 key filename =
