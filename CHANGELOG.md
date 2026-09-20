@@ -1,3 +1,16 @@
+## [0.3.2] - 2026-09-20
+
+### 🚀 Features
+
+- Check S3 connection on startup
+
+### 📚 Documentation
+
+- Features section, v0.2.x description
+
+### ⚙️ Miscellaneous Tasks
+
+- Update dockerfile to bookworm-slim
 ## [0.3.1] - 2026-09-17
 
 ### 🚀 Features
@@ -9,6 +22,10 @@
 ### 🐛 Bug Fixes
 
 - Headers for strict S3-compatible servers (ceph RGW)
+
+### ⚙️ Miscellaneous Tasks
+
+- Bump version 0.3.1
 ## [0.3.0] - 2026-07-28
 
 ### 🚀 Features
