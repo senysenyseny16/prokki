@@ -1,8 +1,13 @@
-FROM haskell:9.6.7 AS build
+FROM debian:bookworm-slim AS build
 
 WORKDIR /build
 COPY . .
-RUN apt update && apt install -y --no-install-recommends libpq-dev && rm -rf /var/lib/apt/lists/*
+RUN apt update && apt install -y --no-install-recommends \
+        ca-certificates curl gcc g++ git gnupg make netbase xz-utils \
+        libc6-dev libffi-dev libgmp-dev libnuma-dev libpq-dev libtinfo-dev zlib1g-dev \
+    && rm -rf /var/lib/apt/lists/*
+RUN curl -sSL https://get.haskellstack.org/ | sh
+RUN stack setup
 RUN stack install --local-bin-path .
 
 FROM debian:bookworm-slim
